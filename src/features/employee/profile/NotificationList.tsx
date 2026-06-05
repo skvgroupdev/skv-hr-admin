@@ -27,7 +27,7 @@ export function NotificationList() {
           <p className={`text-sm ${n.isRead ? 'text-gray-500' : 'font-medium text-gray-800'}`}>
             {n.title}
           </p>
-          <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">{n.message}</p>
+          <p className="text-xs text-gray-400 mt-0.5 line-clamp-1">{n.body}</p>
         </button>
       ))}
       {!notifications?.length && (

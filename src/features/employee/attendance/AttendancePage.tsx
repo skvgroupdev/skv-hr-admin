@@ -9,7 +9,6 @@ import { useCheckOutMutation } from '../../../hooks/mutations/useCheckOutMutatio
 import { useAuthStore } from '../../../stores/useAuthStore'
 import { useLocationStore } from '../../../stores/useLocationStore'
 import { AttendanceStatusCard } from '../home/AttendanceStatusCard'
-import { GpsStatusBadge } from './GpsStatusBadge'
 import { CheckInOutButton } from './CheckInOutButton'
 import { formatDateOnly } from '../../../utils/date'
 import type { AttendanceRecord } from '../../../api/employee-attendance.api'
@@ -167,12 +166,6 @@ export default function AttendancePage() {
   const lat = useLocationStore((s) => s.lat)
   const lng = useLocationStore((s) => s.lng)
   const accuracy = useLocationStore((s) => s.accuracy)
-  const gpsError = useLocationStore((s) => s.error)
-  const isTracking = useLocationStore((s) => s.isTracking)
-
-  // gpsLoading: no location yet and no error — still acquiring on first mount
-  const gpsLoading = !isTracking && lat === null && gpsError === null
-
   const isCheckedIn = !!todayRecord?.checkIn && !todayRecord?.checkOut
   const isMutating  = checkIn.isPending || checkOut.isPending || uploading
 

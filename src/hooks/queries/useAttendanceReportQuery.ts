@@ -15,7 +15,7 @@ type ReportType = 'late' | 'absent'
 export const useAttendanceReportQuery = (type: ReportType, query: AttendanceReportQuery) => {
   const fetchers: Record<ReportType, (q: AttendanceReportQuery) => Promise<unknown>> = {
     late: attendanceApi.getLateReport,
-    absent: attendanceApi.getAbsentReport,
+    absent: attendanceApi.getLateReport,
   }
 
   return useQuery({

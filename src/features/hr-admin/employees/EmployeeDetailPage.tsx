@@ -216,7 +216,7 @@ function SalaryTab({ employee }: { employee: Employee }) {
               {payslipsData.data.map((slip) => (
                 <li key={slip.id} className="flex items-center justify-between py-2.5">
                   <p className="text-sm text-gray-700">
-                    {slip.period?.year ?? '-'} / {slip.period?.month ?? '-'}
+                    {slip.period?.name ?? slip.id.slice(-6)}
                   </p>
                   <p className="text-sm font-medium text-primary">
                     {slip.netSalary?.toLocaleString() ?? '-'}

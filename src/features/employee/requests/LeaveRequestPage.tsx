@@ -13,12 +13,10 @@ const LEAVE_TYPES = [
 ] as const
 
 const leaveSchema = z.object({
-  leaveType: z.enum(['SICK', 'PATERNITY', 'WEDDING', 'ANNUAL', 'OTHER'], {
-    required_error: 'ກະລຸນາເລືອກປະເພດການລາພັກ',
-  }),
+  leaveType: z.enum(['SICK', 'PATERNITY', 'WEDDING', 'ANNUAL', 'OTHER']),
   startDate: z.string().min(1, 'ກະລຸນາເລືອກວັນທີ'),
   endDate: z.string().optional(),
-  period: z.enum(['FULL_DAY', 'AM', 'PM']).default('FULL_DAY'),
+  period: z.enum(['FULL_DAY', 'AM', 'PM']),
   reason: z.string().min(1, 'ກະລຸນາໃສ່ເຫດຜົນ'),
 }).refine(
   (d) => d.period !== 'FULL_DAY' || (!!d.endDate && d.endDate.length > 0),
@@ -60,7 +58,7 @@ export default function LeaveRequestPage() {
       {
         leaveTypeName,
         startDate: formData.startDate,
-        endDate: isHalfDay ? formData.startDate : formData.endDate,
+        endDate: isHalfDay ? formData.startDate : (formData.endDate ?? formData.startDate),
         isHalfDay,
         halfDayPeriod: isHalfDay ? (formData.period as 'AM' | 'PM') : undefined,
         reason: formData.reason,

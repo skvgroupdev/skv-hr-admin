@@ -5,7 +5,8 @@ import App from './App.tsx'
 
 if (import.meta.env.DEV) {
   import('@locator/runtime').then((locator) => {
-    locator.setupRuntime({ adapter: 'react' })
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    ;(locator as any).setupRuntime({ adapter: 'react' })
   })
 }
 

@@ -1,12 +1,5 @@
 import { apiClient } from './client'
-
-export interface Notification {
-  id: string
-  title: string
-  message: string
-  isRead: boolean
-  createdAt: string
-}
+import type { Notification } from '../types/notification'
 
 export interface Announcement {
   id: string

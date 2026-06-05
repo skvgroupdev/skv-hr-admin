@@ -1,11 +1,9 @@
 import { Bell } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useUnreadCountQuery } from '../../hooks/queries/useEmployeeNotificationsQuery'
-import { useAuthStore } from '../../stores/useAuthStore'
 
 export function EmployeeTopBar() {
   const navigate = useNavigate()
-  const user = useAuthStore((s) => s.user)
   const { data: unread } = useUnreadCountQuery()
 
   const unreadCount = unread?.count ?? 0

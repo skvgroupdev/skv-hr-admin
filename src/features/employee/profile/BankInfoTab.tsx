@@ -9,7 +9,7 @@ import type { User } from '../../../types/auth'
 const BANK_OPTIONS = ['BCEL', 'LDB', 'JDB', 'ACLIDA'] as const
 
 const schema = z.object({
-  bankName: z.enum(['BCEL', 'LDB', 'JDB', 'ACLIDA'], { required_error: 'ກະລຸນາເລືອກທະນາຄານ' }),
+  bankName: z.enum(['BCEL', 'LDB', 'JDB', 'ACLIDA']),
   bankAccount: z.string().min(1, 'ກະລຸນາໃສ່ເລກບັນຊີ'),
 })
 type FormData = z.infer<typeof schema>
@@ -31,7 +31,7 @@ export function BankInfoTab({ user }: Props) {
   } = useForm<FormData>({
     resolver: zodResolver(schema),
     defaultValues: {
-      bankName: user.bankName ?? '',
+      bankName: (user.bankName as 'BCEL' | 'LDB' | 'JDB' | 'ACLIDA') ?? 'BCEL',
       bankAccount: user.bankAccount ?? '',
     },
   })
@@ -39,7 +39,7 @@ export function BankInfoTab({ user }: Props) {
   // Sync form when freshUser data arrives after initial login
   useEffect(() => {
     reset({
-      bankName: user.bankName ?? '',
+      bankName: (user.bankName as 'BCEL' | 'LDB' | 'JDB' | 'ACLIDA') ?? 'BCEL',
       bankAccount: user.bankAccount ?? '',
     })
   }, [user.bankName, user.bankAccount, reset])

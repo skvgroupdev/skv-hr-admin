@@ -66,7 +66,9 @@ function PayslipRow({ payslip }: { payslip: PayslipWithEmployee }) {
         </button>
         <div className="text-xs text-gray-400">{payslip.employee.employeeCode}</div>
       </td>
-      <td className="px-4 py-3 text-sm text-gray-600">{payslip.payrollPeriodId.slice(-6)}</td>
+      <td className="px-4 py-3 text-sm text-gray-600">
+        {typeof payslip.payrollPeriodId === 'string' ? payslip.payrollPeriodId.slice(-6) : '-'}
+      </td>
       <td className="px-4 py-3 text-sm text-right text-gray-700">{payslip.grossSalary.toLocaleString()}</td>
       <td className="px-4 py-3 text-sm text-right text-gray-700">{payslip.totalDeductions.toLocaleString()}</td>
       <td className="px-4 py-3 text-sm text-right font-medium text-primary">{payslip.netSalary.toLocaleString()}</td>

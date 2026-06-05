@@ -89,7 +89,7 @@ export interface PaginatedPayslips {
 }
 
 export interface PayslipWithEmployee extends Payslip {
-  employee: { firstName: string; lastName: string; employeeCode: string }
+  employee: { id: string; firstName: string; lastName: string; employeeCode: string }
 }
 
 export interface PaginatedPayslipsWithEmployee {

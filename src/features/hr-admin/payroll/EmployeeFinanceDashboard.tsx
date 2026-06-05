@@ -65,7 +65,7 @@ export function EmployeeFinanceDashboard({ employeeId }: EmployeeFinanceDashboar
             <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
             <XAxis dataKey="name" tick={{ fontSize: 11 }} />
             <YAxis tick={{ fontSize: 11 }} tickFormatter={(v: number) => formatLAKShort(v)} />
-            <Tooltip formatter={(v: number) => [formatLAK(v), 'Net']} />
+            <Tooltip formatter={(v) => [formatLAK(v as number), 'Net']} />
             <Bar dataKey="net" fill="var(--color-primary, #2563eb)" radius={[4, 4, 0, 0]} />
           </BarChart>
         </ResponsiveContainer>
