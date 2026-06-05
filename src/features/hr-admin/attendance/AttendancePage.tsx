@@ -1,0 +1,332 @@
+import { useState } from 'react'
+import { RefreshCw } from 'lucide-react'
+import { useAttendanceSummaryQuery } from '../../../hooks/queries/useAttendanceReportQuery'
+import { useQuery } from '@tanstack/react-query'
+import { attendanceApi } from '../../../api/attendance.api'
+import type { NotCheckedInEmployee } from '../../../api/attendance.api'
+import { Card } from '../../../components/ui/Card'
+import PhotoModal from '../../../components/ui/PhotoModal'
+import { cn } from '../../../lib/cn'
+import type { AttendanceLog, AttendanceStatus, AttendanceSummary } from '../../../types/attendance'
+
+interface PopulatedEmployee {
+  firstName: string
+  lastName: string
+  employeeCode?: string
+  positionId?: { name: string }
+}
+
+interface AttendanceLogWithEmployee extends AttendanceLog {
+  employee?: PopulatedEmployee
+}
+
+type TabKey = 'checkin' | 'late' | 'absent'
+
+const TABS: { key: TabKey; label: string }[] = [
+  { key: 'checkin', label: 'ເຊັກອິນ' },
+  { key: 'late', label: 'ມາຊ້າ' },
+  { key: 'absent', label: 'ຍັງບໍ່ທັນເຊັກອິນ' },
+]
+
+const STATUS_LABELS: Record<AttendanceStatus, string> = {
+  NORMAL: 'ປົກກະຕິ',
+  LATE: 'ມາຊ້າ',
+  LATE_MINOR: 'ມາຊ້າໜ້ອຍ',
+  EARLY_LEAVE: 'ກັບກ່ອນ',
+  ABSENT: 'ຂາດ',
+  MISSING_CHECKOUT: 'ບໍ່ checkout',
+  OUTSIDE_PENDING: 'ນອກສາຂາ (ລໍ)',
+  OUTSIDE_APPROVED: 'ນອກສາຂາ (ອນຸ)',
+  OUTSIDE_REJECTED: 'ນອກສາຂາ (ປະຕິ)',
+  MANUAL_ADJUSTED: 'ປ່ຽນ manual',
+}
+
+const STATUS_COLORS: Record<AttendanceStatus, string> = {
+  NORMAL: 'bg-green-100 text-green-800 border-green-200',
+  LATE: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+  LATE_MINOR: 'bg-yellow-100 text-yellow-800 border-yellow-200',
+  EARLY_LEAVE: 'bg-orange-100 text-orange-800 border-orange-200',
+  ABSENT: 'bg-red-100 text-red-800 border-red-200',
+  MISSING_CHECKOUT: 'bg-gray-100 text-gray-700 border-gray-200',
+  OUTSIDE_PENDING: 'bg-blue-100 text-blue-700 border-blue-200',
+  OUTSIDE_APPROVED: 'bg-teal-100 text-teal-700 border-teal-200',
+  OUTSIDE_REJECTED: 'bg-red-100 text-red-700 border-red-200',
+  MANUAL_ADJUSTED: 'bg-purple-100 text-purple-700 border-purple-200',
+}
+
+
+const todayStr = () => new Date().toISOString().split('T')[0]
+
+// Summary card config
+interface SummaryCardConfig {
+  label: string
+  value: number
+  colorClass: string
+}
+
+function buildSummaryCards(summary: AttendanceSummary): SummaryCardConfig[] {
+  return [
+    { label: 'ທັງໝົດ', value: summary.total, colorClass: 'bg-gray-50 border-gray-200' },
+    { label: 'ເຊັກອິນແລ້ວ', value: summary.checkedIn, colorClass: 'bg-green-50 border-green-200' },
+    { label: 'ຊ້າ', value: summary.late, colorClass: 'bg-yellow-50 border-yellow-200' },
+    { label: 'ຍັງບໍ່ເຊັກ', value: summary.notCheckedIn, colorClass: 'bg-red-50 border-red-200' },
+  ]
+}
+
+const SUMMARY_VALUE_COLORS = ['text-gray-700', 'text-green-700', 'text-yellow-700', 'text-red-700']
+
+function SummaryCards({ summary }: { summary: AttendanceSummary }) {
+  const cards = buildSummaryCards(summary)
+  return (
+    <div className="grid grid-cols-4 gap-3">
+      {cards.map((card, i) => (
+        <div key={card.label} className={`rounded-xl border p-4 ${card.colorClass}`}>
+          <p className="text-xs text-gray-500 mb-1">{card.label}</p>
+          <p className={`text-2xl font-semibold ${SUMMARY_VALUE_COLORS[i]}`}>
+            {card.value} <span className="text-sm font-normal">ຄົນ</span>
+          </p>
+        </div>
+      ))}
+    </div>
+  )
+}
+
+function DailyFilterBar({
+  date,
+  onDateChange,
+}: {
+  date: string
+  onDateChange: (d: string) => void
+}) {
+  const isToday = date === todayStr()
+  return (
+    <div className="flex items-center gap-2">
+      <button
+        onClick={() => onDateChange(todayStr())}
+        className={cn(
+          'rounded-lg px-3 py-2 text-sm font-medium transition-colors',
+          isToday ? 'bg-primary text-white' : 'bg-white border border-gray-300 text-gray-700 hover:bg-gray-50',
+        )}
+      >
+        ມື້ນີ້
+      </button>
+      <input
+        type="date"
+        value={date}
+        onChange={(e) => onDateChange(e.target.value)}
+        className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary"
+      />
+    </div>
+  )
+}
+
+
+function employeeDisplay(log: AttendanceLogWithEmployee) {
+  const code = log.employee?.employeeCode ?? ''
+  const name = log.employee
+    ? `${log.employee.firstName} ${log.employee.lastName}`
+    : log.employeeId.slice(-6)
+  return { code, name, position: log.employee?.positionId?.name ?? '-' }
+}
+
+function formatCheckTime(checkTime: string): string {
+  return new Date(checkTime).toLocaleTimeString('en-GB', {
+    hour: '2-digit',
+    minute: '2-digit',
+    timeZone: 'Asia/Bangkok',
+  })
+}
+
+const HEADERS_CHECKIN = ['ລະຫັດ', 'ຊື່ພະນັກງານ', 'ຕຳແໜ່ງ', 'ເວລາເຊັກອິນ', 'ສະຖານະ', 'ຊ້າ (ນາທີ)', 'ຮູບ']
+const HEADERS_NOT_CHECKED_IN = ['ລະຫັດ', 'ຊື່ພະນັກງານ', 'ຕຳແໜ່ງ', 'ສາຂາ', 'ເວລາເຂົ້າວຽກ', 'ສະຖານະ']
+
+interface AttendanceRowCheckinProps {
+  log: AttendanceLogWithEmployee
+  onPhotoClick: (url: string) => void
+}
+
+function AttendanceRowCheckin({ log, onPhotoClick }: AttendanceRowCheckinProps) {
+  const emp = employeeDisplay(log)
+  return (
+    <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+      <td className="px-4 py-3 text-sm text-gray-500">{emp.code || '-'}</td>
+      <td className="px-4 py-3 text-sm text-gray-700">{emp.name}</td>
+      <td className="px-4 py-3 text-sm text-gray-600">{emp.position}</td>
+      <td className="px-4 py-3 text-sm text-gray-600">{formatCheckTime(log.checkTime)}</td>
+      <td className="px-4 py-3">
+        <span className={`inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium border ${STATUS_COLORS[log.status]}`}>
+          {STATUS_LABELS[log.status]}
+        </span>
+      </td>
+      <td className="px-4 py-3 text-sm text-gray-600">
+        {(log.status === 'LATE' || log.status === 'LATE_MINOR') && log.lateMinutes != null
+          ? <span className={`font-medium ${log.status === 'LATE' ? 'text-red-600' : 'text-yellow-700'}`}>
+              {log.lateMinutes} ນາທີ
+            </span>
+          : '-'}
+      </td>
+      <td className="px-4 py-3">
+        {log.selfieUrl
+          ? (
+            <img
+              src={log.selfieUrl}
+              alt="selfie"
+              className="h-8 w-8 rounded-md object-cover cursor-pointer hover:opacity-80 transition-opacity"
+              onClick={() => onPhotoClick(log.selfieUrl!)}
+            />
+          )
+          : <span className="text-sm text-gray-400">-</span>
+        }
+      </td>
+    </tr>
+  )
+}
+
+interface AttendanceTableProps {
+  logs: AttendanceLogWithEmployee[]
+  onPhotoClick: (url: string) => void
+}
+
+function AttendanceTable({ logs, onPhotoClick }: AttendanceTableProps) {
+  if (logs.length === 0) {
+    return <div className="py-16 text-center text-sm text-gray-500">ບໍ່ມີຂໍ້ມູນ</div>
+  }
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead>
+          <tr className="bg-primary text-white">
+            {HEADERS_CHECKIN.map((h) => (
+              <th key={h} className="px-4 py-3 text-left text-sm font-medium">{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {logs.map((log) => (
+            <AttendanceRowCheckin key={log.id} log={log} onPhotoClick={onPhotoClick} />
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function NotCheckedInTable({ employees }: { employees: NotCheckedInEmployee[] }) {
+  if (employees.length === 0) {
+    return <div className="py-16 text-center text-sm text-gray-500">ບໍ່ມີຂໍ້ມູນ</div>
+  }
+
+  return (
+    <div className="overflow-x-auto">
+      <table className="w-full">
+        <thead>
+          <tr className="bg-primary text-white">
+            {HEADERS_NOT_CHECKED_IN.map((h) => (
+              <th key={h} className="px-4 py-3 text-left text-sm font-medium">{h}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {employees.map((emp) => (
+            <tr key={emp.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
+              <td className="px-4 py-3 text-sm text-gray-500">{emp.employeeCode || '-'}</td>
+              <td className="px-4 py-3 text-sm text-gray-700">{emp.firstName} {emp.lastName}</td>
+              <td className="px-4 py-3 text-sm text-gray-600">{emp.position?.name ?? '-'}</td>
+              <td className="px-4 py-3 text-sm text-gray-600">{emp.branch?.name ?? '-'}</td>
+              <td className="px-4 py-3 text-sm text-gray-600">{emp.shiftStartTime ?? '-'}</td>
+              <td className="px-4 py-3">
+                <span className="inline-flex rounded-full px-2.5 py-0.5 text-xs font-medium border bg-red-100 text-red-800 border-red-200">
+                  ຍັງບໍ່ເຊັກອິນ
+                </span>
+              </td>
+            </tr>
+          ))}
+        </tbody>
+      </table>
+    </div>
+  )
+}
+
+function filterLogs(allLogs: AttendanceLogWithEmployee[], tab: TabKey) {
+  if (tab === 'checkin') return allLogs.filter((l) => l.type === 'CHECK_IN')
+  if (tab === 'late') return allLogs.filter(
+    (l) => l.type === 'CHECK_IN' && (l.status === 'LATE' || l.status === 'LATE_MINOR'),
+  )
+  return allLogs
+}
+
+export default function AttendancePage() {
+  const [activeTab, setActiveTab] = useState<TabKey>('checkin')
+  const [date, setDate] = useState(todayStr)
+  const [selfieUrl, setSelfieUrl] = useState<string | null>(null)
+
+  const { data: dailyData, isLoading, isError, isFetching } = useQuery({
+    queryKey: ['attendance', 'report', 'daily', date],
+    queryFn: () => attendanceApi.getDailyReport({ date }),
+    staleTime: 30_000,
+    refetchInterval: 30_000,
+  })
+
+  const { data: notCheckedInData, isLoading: notCheckedInLoading } = useQuery({
+    queryKey: ['attendance', 'report', 'not-checked-in', date],
+    queryFn: () => attendanceApi.getNotCheckedInReport({ date }),
+    enabled: activeTab === 'absent',
+    staleTime: 30_000,
+    refetchInterval: 30_000,
+  })
+
+  const { data: summary } = useAttendanceSummaryQuery(date)
+
+  const allLogs = (dailyData as AttendanceLogWithEmployee[]) ?? []
+  const displayLogs = filterLogs(allLogs, activeTab)
+  const loading = activeTab === 'absent' ? notCheckedInLoading : isLoading
+
+  return (
+    <div className="p-6 space-y-5">
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <h1 className="text-xl font-semibold text-gray-900">ການເຂົ້າວຽກ</h1>
+          <span className="text-xs text-gray-400 flex items-center gap-1">
+            <RefreshCw className={cn('w-3 h-3', isFetching && 'animate-spin')} />
+            ອັບເດດທຸກ 30 ວິນາທີ
+          </span>
+        </div>
+        <DailyFilterBar date={date} onDateChange={setDate} />
+      </div>
+
+      {summary && <SummaryCards summary={summary} />}
+
+      <div className="flex gap-1 border-b border-gray-200">
+        {TABS.map((tab) => (
+          <button
+            key={tab.key}
+            onClick={() => setActiveTab(tab.key)}
+            className={cn(
+              'px-4 py-2.5 text-sm font-medium transition-colors border-b-2 -mb-px',
+              activeTab === tab.key
+                ? 'border-primary text-primary'
+                : 'border-transparent text-gray-500 hover:text-gray-700',
+            )}
+          >
+            {tab.label}
+          </button>
+        ))}
+      </div>
+
+      <Card padding={false}>
+        {isError ? (
+          <div className="px-6 py-12 text-center text-sm text-red-600">ເກີດຂໍ້ຜິດພາດໃນການໂຫລດຂໍ້ມູນ</div>
+        ) : loading ? (
+          <div className="px-6 py-12 text-center text-sm text-gray-500">ກຳລັງໂຫລດ...</div>
+        ) : activeTab === 'absent' ? (
+          <NotCheckedInTable employees={notCheckedInData ?? []} />
+        ) : (
+          <AttendanceTable logs={displayLogs} onPhotoClick={setSelfieUrl} />
+        )}
+      </Card>
+
+      {selfieUrl && <PhotoModal url={selfieUrl} onClose={() => setSelfieUrl(null)} />}
+    </div>
+  )
+}
