@@ -11,8 +11,10 @@ export const useLoginMutation = () => {
 
   return useMutation({
     mutationFn: (data: LoginRequest) => authApi.login(data),
+    // onError intentionally left empty — LoginPage reads loginMutation.isError + loginMutation.error
+    onError: () => {},
     onSuccess: (response) => {
-      setTokens(response.accessToken, response.refreshToken)
+      setTokens(response.accessToken, response.refreshToken, response.user.role)
       setUser(response.user)
 
       const role = response.user.role

@@ -27,6 +27,7 @@ export default function LoginPage() {
     formState: { errors },
   } = useForm<LoginFormData>({
     resolver: zodResolver(loginSchema),
+    defaultValues: { phone: '', password: '', companyCode: '' },
   })
 
   const getErrorMessage = (error: unknown): string => {

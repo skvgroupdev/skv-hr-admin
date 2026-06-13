@@ -32,8 +32,9 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     return <Navigate to="/login" replace />
   }
 
-  // User is being restored from token — hold render for role-gated routes to avoid flash of 403
+  // Waiting for user to restore from token — show nothing until resolved
   if (allowedRoles && !user) {
+    if (!isHydrating) return <Navigate to="/login" replace />
     return null
   }
 
