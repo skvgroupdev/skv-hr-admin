@@ -4,6 +4,7 @@ import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { ArrowLeft } from 'lucide-react'
 import { useCreateCompanyMutation } from '../../../hooks/mutations/useCreateCompanyMutation'
+import { usePlansQuery } from '../../../hooks/queries/usePlansQuery'
 import { Input } from '../../../components/ui/Input'
 import { Button } from '../../../components/ui/Button'
 import { Card } from '../../../components/ui/Card'
@@ -17,6 +18,7 @@ const schema = z.object({
   address: z.string().optional(),
   defaultTimezone: z.string().min(1),
   defaultLanguage: z.string().min(1),
+  planId: z.string().optional(),
 })
 
 type FormData = z.infer<typeof schema>
@@ -29,7 +31,7 @@ const TIMEZONES = [
 ]
 
 const LANGUAGES = [
-  { value: 'lo', label: 'ລາພັກວ' },
+  { value: 'lo', label: 'ລາວ' },
   { value: 'th', label: 'ໄທ' },
   { value: 'en', label: 'ອັງກິດ' },
 ]
@@ -37,6 +39,7 @@ const LANGUAGES = [
 export default function CompanyCreatePage() {
   const navigate = useNavigate()
   const createMutation = useCreateCompanyMutation()
+  const { data: plans = [] } = usePlansQuery()
 
   const {
     register,
@@ -52,7 +55,7 @@ export default function CompanyCreatePage() {
 
   const onSubmit = async (data: FormData) => {
     try {
-      await createMutation.mutateAsync({
+      const company = await createMutation.mutateAsync({
         name: data.name,
         email: data.email || undefined,
         phone: data.phone || undefined,
@@ -60,9 +63,10 @@ export default function CompanyCreatePage() {
         address: data.address || undefined,
         defaultTimezone: data.defaultTimezone,
         defaultLanguage: data.defaultLanguage,
+        planId: data.planId || undefined,
       })
       toast.success('ສ້າງບໍລິສັດສຳເລັດ')
-      navigate('/super/companies')
+      navigate(`/super/companies/${company.id}`)
     } catch {
       toast.error('ບໍ່ສາມາດສ້າງບໍລິສັດໄດ້ ກະລຸນາລອງໃໝ່')
     }
@@ -150,6 +154,23 @@ export default function CompanyCreatePage() {
                 ))}
               </select>
             </div>
+          </div>
+
+          <div className="flex flex-col gap-1">
+            <label className="text-sm font-medium text-gray-700">ແພັກເກດ</label>
+            <select
+              className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm text-gray-900 focus:outline-none focus:ring-2 focus:ring-primary focus:border-primary transition-colors"
+              {...register('planId')}
+            >
+              <option value="">— ບໍ່ເລືອກແພັກເກດ —</option>
+              {plans
+                .filter((p) => p.isActive)
+                .map((p) => (
+                  <option key={p.id} value={p.id}>
+                    {p.name} — {p.price.toLocaleString()} {p.currency}
+                  </option>
+                ))}
+            </select>
           </div>
 
           <div className="flex gap-3 pt-2">

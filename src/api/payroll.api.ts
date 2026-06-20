@@ -46,6 +46,24 @@ export const payrollApi = {
     return unwrap<PayrollPeriod>(res)
   },
 
+  hrReview: async (id: string): Promise<PayrollPeriod> => {
+    const res = await apiClient.post(`/payroll/periods/${id}/hr-review`)
+    return unwrap<PayrollPeriod>(res)
+  },
+
+  pay: async (id: string): Promise<PayrollPeriod> => {
+    const res = await apiClient.post(`/payroll/periods/${id}/pay`)
+    return unwrap<PayrollPeriod>(res)
+  },
+
+  updateAdjustments: async (
+    id: string,
+    adjustments: Array<{ kind: 'ADDITION' | 'DEDUCTION'; name: string; amount: number; reason: string }>,
+  ): Promise<Payslip> => {
+    const res = await apiClient.patch(`/payroll/payslips/${id}/adjustments`, { adjustments })
+    return unwrap<Payslip>(res)
+  },
+
   getPeriodPayslips: async (id: string, page = 1, limit = 20): Promise<PaginatedPayslips> => {
     const res = await apiClient.get(`/payroll/periods/${id}/payslips`, { params: { page, limit } })
     return res.data as PaginatedPayslips

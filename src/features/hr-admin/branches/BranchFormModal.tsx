@@ -6,6 +6,8 @@ import { MapPicker } from './MapPicker'
 import { useCreateBranchMutation } from '../../../hooks/mutations/useCreateBranchMutation'
 import { useUpdateBranchMutation } from '../../../hooks/mutations/useUpdateBranchMutation'
 import type { Branch } from '../../../types/branch'
+import { useEmployeesQuery } from '../../../hooks/queries/useEmployeesQuery'
+import { branchesApi } from '../../../api/branches.api'
 
 interface BranchFormModalProps {
   open: boolean
@@ -21,6 +23,7 @@ interface FormState {
   radiusMeters: string
   coords: [number, number] | undefined // [lat, lng]
   isActive: boolean
+  managerEmployeeId: string
 }
 
 function getInitialForm(branch?: Branch): FormState {
@@ -34,6 +37,7 @@ function getInitialForm(branch?: Branch): FormState {
     radiusMeters: branch?.radiusMeters?.toString() ?? '',
     coords: lat != null && lng != null ? [lat, lng] : undefined,
     isActive: branch?.isActive ?? true,
+    managerEmployeeId: '',
   }
 }
 
@@ -59,6 +63,7 @@ export function BranchFormModal({ open, onClose, branch }: BranchFormModalProps)
   const updateMutation = useUpdateBranchMutation()
   const isLoading = createMutation.isPending || updateMutation.isPending
   const isEdit = !!branch
+  const { data: employeesData } = useEmployeesQuery({ limit: 100, status: 'ACTIVE' })
 
   useEffect(() => {
     if (open) {
@@ -66,6 +71,12 @@ export function BranchFormModal({ open, onClose, branch }: BranchFormModalProps)
       setError('')
     }
   }, [open, branch])
+
+  useEffect(() => {
+    if (!open || !branch?.managerId || !employeesData?.data) return
+    const manager = employeesData.data.find((employee) => employee.userId === branch.managerId)
+    if (manager) setForm((current) => ({ ...current, managerEmployeeId: manager.id }))
+  }, [open, branch, employeesData])
 
   const setField = (key: keyof FormState) => (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.type === 'checkbox' ? e.target.checked : e.target.value
@@ -89,10 +100,14 @@ export function BranchFormModal({ open, onClose, branch }: BranchFormModalProps)
 
     try {
       const body = buildPayload(form)
+      let savedBranch: Branch
       if (isEdit) {
-        await updateMutation.mutateAsync({ id: branch.id, body })
+        savedBranch = await updateMutation.mutateAsync({ id: branch.id, body })
       } else {
-        await createMutation.mutateAsync(body)
+        savedBranch = await createMutation.mutateAsync(body)
+      }
+      if (form.managerEmployeeId) {
+        await branchesApi.assignManager(savedBranch.id, form.managerEmployeeId)
       }
       onClose()
     } catch {
@@ -134,6 +149,21 @@ export function BranchFormModal({ open, onClose, branch }: BranchFormModalProps)
           onChange={setField('radiusMeters')}
           placeholder="500"
         />
+        <div className="flex flex-col gap-1">
+          <label className="text-sm font-medium text-gray-700">ຫົວໜ້າສາຂາ</label>
+          <select
+            value={form.managerEmployeeId}
+            onChange={(event) => setForm((current) => ({ ...current, managerEmployeeId: event.target.value }))}
+            className="rounded-lg border border-gray-300 px-3 py-2 text-sm"
+          >
+            <option value="">ຍັງບໍ່ກຳນົດ</option>
+            {employeesData?.data.map((employee) => (
+              <option key={employee.id} value={employee.id}>
+                {employee.firstName} {employee.lastName}{employee.nickname ? ` (${employee.nickname})` : ''}
+              </option>
+            ))}
+          </select>
+        </div>
 
         <MapPicker value={form.coords} onChange={handleMapChange} />
 

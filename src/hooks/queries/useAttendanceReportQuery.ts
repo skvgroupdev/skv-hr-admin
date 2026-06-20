@@ -2,10 +2,15 @@ import { useQuery } from '@tanstack/react-query'
 import { attendanceApi } from '../../api/attendance.api'
 import type { AttendanceReportQuery } from '../../types/attendance'
 
-export const useAttendanceSummaryQuery = (date?: string) =>
+interface SummaryQueryParams {
+  date?: string
+  branchId?: string
+}
+
+export const useAttendanceSummaryQuery = (params: SummaryQueryParams = {}) =>
   useQuery({
-    queryKey: ['attendance', 'summary', date ?? 'today'],
-    queryFn: () => attendanceApi.getSummary(date),
+    queryKey: ['attendance', 'summary', params.date ?? 'today', params.branchId ?? ''],
+    queryFn: () => attendanceApi.getSummary(params),
     staleTime: 30_000,
     refetchInterval: 30_000,
   })

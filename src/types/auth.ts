@@ -6,6 +6,21 @@ export type Role =
   | 'SUPERVISOR'
   | 'STAFF'
 
+export type SubscriptionStatus =
+  | 'TRIAL'
+  | 'ACTIVE'
+  | 'PAST_DUE'
+  | 'EXPIRED'
+  | 'CANCELLED'
+  | 'SUSPENDED'
+
+export interface SubscriptionSummary {
+  status: SubscriptionStatus
+  endDate: string | null
+  planName: string
+  isPaid: boolean
+}
+
 export interface User {
   id: string
   phone: string
@@ -15,6 +30,7 @@ export interface User {
   role: Role
   companyId: string | null
   branchId: string | null
+  features?: import('./plan').PlanFeatures
   employeeId?: string
   employeeCode?: string
   position?: { id: string; name: string; banding?: string }
@@ -29,6 +45,7 @@ export interface User {
   address?: string
   bankName?: string
   bankAccount?: string
+  subscriptionSummary?: SubscriptionSummary
 }
 
 export interface LoginRequest {

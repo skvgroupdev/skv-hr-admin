@@ -14,7 +14,7 @@ const SUB_TABS: { key: SubTab; label: string }[] = [
 
 function OTSummaryTab({ query }: { query: ReportQuery }) {
   const { data = [], isLoading } = useOTSummaryQuery(query)
-  const headers = ['ພະນັກງານ', 'ຊົ່ວໂມງລວມ', 'ອນຸມັດ', 'ລໍຖ້າ']
+  const headers = ['ພະນັກງານ', 'ຊົ່ວໂມງລວມ', 'ອະນຸມັດ', 'ລໍຖ້າ']
   const rows = data.map((r, i) => (
     <tr key={i} className="border-b border-gray-100 hover:bg-gray-50">
       <td className="px-4 py-3 text-sm text-gray-900">{r.employeeName}</td>

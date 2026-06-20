@@ -1,12 +1,39 @@
+import { useEffect, useRef, useState } from 'react'
 import { LogOut, User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
+import { useQueryClient } from '@tanstack/react-query'
 import { useAuthStore } from '../../stores/useAuthStore'
 import { RoleBadge } from '../ui/Badge'
+import { NotificationBell } from '../ui/NotificationBell'
+import { toast } from '../ui/Toast'
+import { useNotificationSocketContext } from '../../context/NotificationSocketContext'
 
 export function TopBar() {
   const user = useAuthStore((s) => s.user)
   const logout = useAuthStore((s) => s.logout)
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+
+  const { lastNotification } = useNotificationSocketContext()
+
+  // Track how many unread bumps arrived via socket (resets when dropdown opens/reads)
+  const [socketUnreadBump, setSocketUnreadBump] = useState(0)
+  const prevNotifRef = useRef(lastNotification)
+
+  useEffect(() => {
+    // Only act when a genuinely new payload arrives
+    if (lastNotification && lastNotification !== prevNotifRef.current) {
+      prevNotifRef.current = lastNotification
+      setSocketUnreadBump((n) => n + 1)
+      toast.success(lastNotification.message)
+      queryClient.invalidateQueries({ queryKey: ['notifications'] })
+
+      // If it's a leave request, refresh HR pending list
+      if (lastNotification.type === 'LEAVE_REQUEST') {
+        queryClient.invalidateQueries({ queryKey: ['leave', 'pending'] })
+      }
+    }
+  }, [lastNotification, queryClient])
 
   const handleLogout = () => {
     logout()
@@ -20,6 +47,7 @@ export function TopBar() {
       <div className="flex items-center gap-4">
         {user && (
           <div className="flex items-center gap-3">
+            <NotificationBell socketUnreadBump={socketUnreadBump} />
             <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary-light">
               <User className="h-4 w-4 text-primary" />
             </div>

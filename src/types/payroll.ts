@@ -1,5 +1,5 @@
-export type PayrollPeriodStatus = 'DRAFT' | 'GENERATED' | 'APPROVED' | 'LOCKED'
-export type PayslipStatus = 'DRAFT' | 'APPROVED' | 'PAID'
+export type PayrollPeriodStatus = 'DRAFT' | 'GENERATED' | 'HR_REVIEWED' | 'PAID' | 'APPROVED' | 'LOCKED'
+export type PayslipStatus = 'DRAFT' | 'HR_REVIEWED' | 'PAID' | 'APPROVED'
 
 export interface PayslipEmployee {
   id: string
@@ -27,6 +27,10 @@ export interface PayrollPeriod {
   generatedBy?: string
   approvedBy?: string
   lockedBy?: string
+  hrReviewedBy?: string
+  hrReviewedAt?: string
+  paidBy?: string
+  paidAt?: string
   createdAt: string
   updatedAt: string
 }
@@ -39,6 +43,16 @@ export interface PayslipAllowance {
 export interface PayslipDeduction {
   name: string
   amount: number
+}
+
+export interface PayrollAdjustment {
+  kind: 'ADDITION' | 'DEDUCTION'
+  name: string
+  amount: number
+  reason: string
+  source: 'SYSTEM' | 'MANUAL' | 'PREVIOUS_PERIOD_CORRECTION'
+  createdBy?: string
+  createdAt: string
 }
 
 export interface Payslip {
@@ -58,6 +72,10 @@ export interface Payslip {
   totalDeductions: number
   netSalary: number
   employerSsAmount: number
+  approvedRestDays?: number
+  unusedRestDays?: number
+  restDayCompensationAmount?: number
+  adjustments?: PayrollAdjustment[]
   status: PayslipStatus
   createdAt: string
   // Populated fields returned from backend when requested

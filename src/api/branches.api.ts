@@ -50,4 +50,9 @@ export const branchesApi = {
     const res = await apiClient.post(`/branches/${id}/deactivate`)
     return unwrap<Branch>(res)
   },
+
+  assignManager: async (id: string, employeeId: string): Promise<Branch> => {
+    const res = await apiClient.post(`/branches/${id}/manager`, { employeeId })
+    return unwrap<Branch>(res)
+  },
 }

@@ -35,7 +35,7 @@ export const outsideWorkApi = {
   },
 
   reject: async (id: string, rejectReason: string): Promise<OutsideWork> => {
-    const res = await apiClient.post(`/outside-work/${id}/reject`, { rejectReason })
+    const res = await apiClient.post(`/outside-work/${id}/reject`, { reason: rejectReason })
     return unwrap<OutsideWork>(res)
   },
 }

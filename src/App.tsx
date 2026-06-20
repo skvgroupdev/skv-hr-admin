@@ -4,13 +4,16 @@ import { ReactQueryDevtools } from '@tanstack/react-query-devtools'
 import { router } from './router'
 import { queryClient } from './lib/queryClient'
 import { ToastContainer } from './components/ui/Toast'
+import { NotificationSocketProvider } from './context/NotificationSocketContext'
 
 export default function App() {
   return (
     <QueryClientProvider client={queryClient}>
-      <RouterProvider router={router} />
-      <ToastContainer />
-      <ReactQueryDevtools initialIsOpen={false} />
+      <NotificationSocketProvider>
+        <RouterProvider router={router} />
+        <ToastContainer />
+        <ReactQueryDevtools initialIsOpen={false} />
+      </NotificationSocketProvider>
     </QueryClientProvider>
   )
 }

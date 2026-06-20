@@ -4,7 +4,8 @@ import type { User } from '../types/auth'
 const ACCESS_TOKEN_KEY = 'skv_access_token'
 const REFRESH_TOKEN_KEY = 'skv_refresh_token'
 
-const EMPLOYEE_ROLES = ['STAFF', 'SUPERVISOR', 'BRANCH_MANAGER'] as const
+// Only STAFF uses localStorage (persistent). All other roles use sessionStorage (tab-scoped).
+const EMPLOYEE_ROLES = ['STAFF'] as const
 
 // Employee roles use localStorage (persistent); HR/Super use sessionStorage (tab-scoped)
 const getStorage = (role?: string): Storage =>

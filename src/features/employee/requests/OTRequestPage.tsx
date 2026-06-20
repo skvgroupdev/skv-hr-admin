@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useOTRequestMutation } from '../../../hooks/mutations/useOTRequestMutation'
+import { toast } from '../../../components/ui/Toast'
 
 const otSchema = z.object({
   date: z.string().min(1, 'ກະລຸນາເລືອກວັນທີ'),
@@ -27,7 +28,16 @@ export default function OTRequestPage() {
 
     mutation.mutate(
       { ...data, startTime: startDatetime, endTime: endDatetime },
-      { onSuccess: () => navigate('/employee/requests', { state: { tab: 'ot' } }) },
+      {
+        onSuccess: () => {
+          toast.success('ສົ່ງຄຳຮ້ອງ OT ສຳເລັດ')
+          navigate('/employee/requests', { state: { tab: 'ot' } })
+        },
+        onError: (error: unknown) => {
+          const msg = (error as { response?: { data?: { message?: string } } })?.response?.data?.message
+          toast.error(msg ?? 'ເກີດຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່')
+        },
+      },
     )
   }
 
@@ -66,11 +76,7 @@ export default function OTRequestPage() {
           {errors.reason && <p className="mt-1 text-xs text-red-600">{errors.reason.message}</p>}
         </div>
 
-        {mutation.isError && (
-          <p className="text-sm text-red-600">
-            {(mutation.error as any)?.response?.data?.message ?? 'ເກີດຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່'}
-          </p>
-        )}
+
 
         <button
           type="submit"

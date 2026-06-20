@@ -1,11 +1,12 @@
 import { useState } from 'react'
-import { Plus, Clock } from 'lucide-react'
+import { Plus, Clock, Users } from 'lucide-react'
 import { useShiftsQuery } from '../../../hooks/queries/useShiftsQuery'
 import { useDeleteShiftMutation } from '../../../hooks/mutations/useShiftMutations'
 import { Button } from '../../../components/ui/Button'
 import { Card } from '../../../components/ui/Card'
 import { EmptyState } from '../../../components/ui/EmptyState'
 import { ShiftFormModal } from './ShiftFormModal'
+import { BulkAssignShiftModal } from './BulkAssignShiftModal'
 import type { Shift } from '../../../types/shift'
 
 const HEADERS = ['ຊື່ກະ', 'ເວລາພັກ', 'ພັກ', 'ວັນທຳງານ', 'ຜ່ອນຜັນ (ນາທີ)', 'ຂ້າມຄືນ', 'ສະຖານະ', 'ການຈັດການ']
@@ -73,6 +74,7 @@ function ShiftRow({ shift, onEdit }: { shift: Shift; onEdit: (s: Shift) => void 
 
 export default function ShiftListPage() {
   const [modalOpen, setModalOpen] = useState(false)
+  const [bulkModalOpen, setBulkModalOpen] = useState(false)
   const [editingShift, setEditingShift] = useState<Shift | undefined>()
 
   const { data: shifts, isLoading, isError } = useShiftsQuery()
@@ -94,10 +96,16 @@ export default function ShiftListPage() {
           <h1 className="text-xl font-semibold text-gray-900">ໂມງເຂົ້າວຽກ</h1>
           <p className="text-sm text-gray-500 mt-0.5">ທັງໝົດ {shifts?.length ?? 0} ກະ</p>
         </div>
-        <Button onClick={handleCreate}>
-          <Plus className="h-4 w-4" />
-          ສ້າງກະ
-        </Button>
+        <div className="flex items-center gap-2">
+          <Button variant="ghost" onClick={() => setBulkModalOpen(true)}>
+            <Users className="h-4 w-4" />
+            ກຳນົດກະໝູ່
+          </Button>
+          <Button onClick={handleCreate}>
+            <Plus className="h-4 w-4" />
+            ສ້າງກະ
+          </Button>
+        </div>
       </div>
 
       <Card padding={false}>
@@ -154,6 +162,7 @@ export default function ShiftListPage() {
       </Card>
 
       <ShiftFormModal open={modalOpen} onClose={() => setModalOpen(false)} shift={editingShift} />
+      <BulkAssignShiftModal open={bulkModalOpen} onClose={() => setBulkModalOpen(false)} />
     </div>
   )
 }

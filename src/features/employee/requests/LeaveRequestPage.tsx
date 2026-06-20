@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { useLeaveRequestMutation } from '../../../hooks/mutations/useLeaveRequestMutation'
+import { toast } from '../../../components/ui/Toast'
 
 const LEAVE_TYPES = [
   { value: 'SICK',      label: 'ລາເຈັບ' },
@@ -64,7 +65,19 @@ export default function LeaveRequestPage() {
         reason: formData.reason,
       },
       {
-        onSuccess: () => navigate('/employee/requests', { state: { tab: 'leave' } }),
+        onSuccess: () => {
+          toast.success('ສົ່ງຄຳຮ້ອງລາພັກສຳເລັດ')
+          navigate('/employee/requests', { state: { tab: 'leave' } })
+        },
+        onError: (error: unknown) => {
+          const msg = (error as { response?: { data?: { message?: string } } })
+            ?.response?.data?.message
+          if (msg?.toLowerCase().includes('overlap')) {
+            toast.error('ມີຄຳຮ້ອງລາພັກຊ້ຳກັນໃນຊ່ວງວັນທີນີ້ແລ້ວ')
+          } else {
+            toast.error(msg ?? 'ເກີດຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່')
+          }
+        },
       },
     )
   }

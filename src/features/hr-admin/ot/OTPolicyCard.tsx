@@ -47,7 +47,7 @@ function PolicyForm({ policy, onCancel }: { policy: OTPolicy; onCancel: () => vo
         {([
           ['beforeWorkAllowed', 'ອະນຸຍາດ OT ກ່ອນເຂົ້າ'],
           ['afterWorkAllowed', 'ອະນຸຍາດ OT ຫຼັງອອກ'],
-          ['requirePreApproval', 'ຕ້ອງຂໍອນຸມັດກ່ອນ'],
+          ['requirePreApproval', 'ຕ້ອງຂໍອະນຸມັດກ່ອນ'],
           ['compareWithCheckout', 'ປຽບທຽບກັບ checkout'],
         ] as const).map(([key, label]) => (
           <label key={key} className="flex items-center gap-2 text-sm text-gray-700">
@@ -90,7 +90,7 @@ export function OTPolicyCard() {
           <div><span className="text-gray-500">ວັນຫຍຸດ</span><p className="font-medium">{policy.holidayRate}x</p></div>
           <div><span className="text-gray-500">OT ຕ່ຳສຸດ</span><p className="font-medium">{policy.minOtMinutes} ນາທີ</p></div>
           <div><span className="text-gray-500">OT ສູງສຸດ/ວັນ</span><p className="font-medium">{policy.maxOtHoursPerDay} ຊ.ມ</p></div>
-          <div><span className="text-gray-500">ຕ້ອງຂໍອນຸມັດ</span><p className="font-medium">{policy.requirePreApproval ? 'ແມ່ນ' : 'ບໍ່'}</p></div>
+          <div><span className="text-gray-500">ຕ້ອງຂໍອະນຸມັດ</span><p className="font-medium">{policy.requirePreApproval ? 'ແມ່ນ' : 'ບໍ່'}</p></div>
         </div>
       )}
     </Card>

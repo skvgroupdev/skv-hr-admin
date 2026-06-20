@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Eye, EyeOff } from 'lucide-react'
+import { Link } from 'react-router-dom'
 import { useLoginMutation } from './useAuth'
 import { Input } from '../../components/ui/Input'
 import { Button } from '../../components/ui/Button'
@@ -19,7 +20,7 @@ type LoginFormData = z.infer<typeof loginSchema>
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false)
   const [showCompanyCode, setShowCompanyCode] = useState(false)
-  const loginMutation = useLoginMutation()
+  const loginMutation = useLoginMutation('staff')
 
   const {
     register,
@@ -58,7 +59,7 @@ export default function LoginPage() {
           {/* Logo */}
           <div className="mb-8 flex flex-col items-center">
             <img src="/skv-hr-logo.png" alt="SKV HR" className="h-16 w-auto object-contain mb-4" />
-            <h1 className="text-2xl font-semibold text-gray-900">ເຂົ້າສູ່ລະບົບ</h1>
+            <h1 className="text-2xl font-semibold text-gray-900">ເຂົ້າສູ່ລະບົບພະນັກງານ</h1>
             <p className="mt-1 text-sm text-gray-500">SKV HR - ລະບົບຈັດການບຸກຄະລາພັກກອນ</p>
           </div>
 
@@ -123,6 +124,13 @@ export default function LoginPage() {
               </Button>
             </form>
           </div>
+
+          <p className="mt-4 text-center text-sm text-gray-500">
+            ຜູ້ດູແລລະບົບ?{' '}
+            <Link to="/admin/login" className="text-primary font-medium hover:underline">
+              ເຂົ້າສູ່ລະບົບທີ່ນີ້
+            </Link>
+          </p>
         </div>
       </main>
 

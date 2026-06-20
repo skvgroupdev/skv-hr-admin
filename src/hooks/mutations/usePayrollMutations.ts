@@ -33,3 +33,19 @@ export const useLockPayrollMutation = () => {
     onSuccess: () => { qc.invalidateQueries({ queryKey: ['payroll', 'periods'] }) },
   })
 }
+
+export const useHrReviewPayrollMutation = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => payrollApi.hrReview(id),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['payroll'] }) },
+  })
+}
+
+export const usePayPayrollMutation = () => {
+  const qc = useQueryClient()
+  return useMutation({
+    mutationFn: (id: string) => payrollApi.pay(id),
+    onSuccess: () => { qc.invalidateQueries({ queryKey: ['payroll'] }) },
+  })
+}

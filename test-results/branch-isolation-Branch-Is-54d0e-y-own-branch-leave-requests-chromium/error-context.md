@@ -23,7 +23,7 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
 +8562011000014
 
 	ລາພັກ (Annual)	09/05/2026 – 11/05/2026	3 ວັນ	ຂໍລາພັກປະຈຳປີ	
-ອນຸມັດ
+ອະນຸມັດ
 ປະຕິເສດ
 
 
@@ -33,7 +33,7 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
 +8562011000014
 
 	ລາພັກ (Annual)	09/05/2026 – 11/05/2026	3 ວັນ	ຂໍລາພັກປະຈຳປີ	
-ອນຸມັດ
+ອະນຸມັດ
 ປະຕິເສດ
 
 
@@ -43,7 +43,7 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
 +8562011000015
 
 	ລາພັກ (Annual)	07/04/2025 – 08/04/2025	2 ວັນ	ຂໍລາພັກປະຈຳປີ	
-ອນຸມັດ
+ອະນຸມັດ
 ປະຕິເສດ
 
 
@@ -53,7 +53,7 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
 +8562011000013
 
 	ລາໂດຍບໍ່ໄດ້ຮັບ (Unpaid)	15/04/2025 – 15/04/2025	1 ວັນ	ກິດທຸລະສ່ວນຕົວ	
-ອນຸມັດ
+ອະນຸມັດ
 ປະຕິເສດ
 
 
@@ -63,7 +63,7 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
 +8562011000001
 
 	ລາພັກ (Annual)	07/02/2025 – 07/02/2025	1 ວັນ	ຂໍລາພັກປະຈຳປີ	
-ອນຸມັດ
+ອະນຸມັດ
 ປະຕິເສດ
 
 
@@ -73,7 +73,7 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
 +8562011000002
 
 	ລາພັກ (Annual)	09/03/2026 – 13/03/2026	5 ວັນ	ຂໍລາພັກປະຈຳປີ	
-ອນຸມັດ
+ອະນຸມັດ
 ປະຕິເສດ
 
 
@@ -83,7 +83,7 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
 +8562011000002
 
 	ລາພັກ (Annual)	09/03/2026 – 13/03/2026	5 ວັນ	ຂໍລາພັກປະຈຳປີ	
-ອນຸມັດ
+ອະນຸມັດ
 ປະຕິເສດ
 
 
@@ -93,7 +93,7 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
 +8562011000004
 
 	ລາພັກ (Annual)	12/04/2025 – 14/04/2025	3 ວັນ	ຂໍລາພັກປະຈຳປີ	
-ອນຸມັດ
+ອະນຸມັດ
 ປະຕິເສດ
 
 
@@ -103,7 +103,7 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
 +8562011000004
 
 	ລາພັກ (Annual)	12/04/2025 – 14/04/2025	3 ວັນ	ຂໍລາພັກປະຈຳປີ	
-ອນຸມັດ
+ອະນຸມັດ
 ປະຕິເສດ"
 ```
 
@@ -165,12 +165,12 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
                 - generic [ref=e71]: OT
                 - generic [ref=e72]: "20"
             - listitem [ref=e73]:
-              - link "ອອກນອກສາຂາ" [ref=e74] [cursor=pointer]:
+              - link "ອອກວຽກນອກ" [ref=e74] [cursor=pointer]:
                 - /url: /hr/outside-work
                 - img [ref=e75]
-                - generic [ref=e78]: ອອກນອກສາຂາ
+                - generic [ref=e78]: ອອກວຽກນອກ
         - generic [ref=e79]:
-          - paragraph [ref=e80]: ການເງິນ & ລາພັກຍງານ
+          - paragraph [ref=e80]: ການເງິນ & ລາຍງານ
           - list [ref=e81]:
             - listitem [ref=e82]:
               - link "ເງິນເດືອນ" [ref=e83] [cursor=pointer]:
@@ -178,10 +178,10 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
                 - img [ref=e84]
                 - generic [ref=e86]: ເງິນເດືອນ
             - listitem [ref=e87]:
-              - link "ລາພັກຍງານ" [ref=e88] [cursor=pointer]:
+              - link "ລາຍງານ" [ref=e88] [cursor=pointer]:
                 - /url: /hr/reports
                 - img [ref=e89]
-                - generic [ref=e91]: ລາພັກຍງານ
+                - generic [ref=e91]: ລາຍງານ
         - generic [ref=e92]:
           - paragraph [ref=e93]: ການສື່ສານ
           - list [ref=e94]:
@@ -230,7 +230,7 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
         - generic [ref=e146]:
           - heading "ການລາພັກ" [level=1] [ref=e147]
           - generic [ref=e148]:
-            - button "ລໍຖ້າອນຸມັດ" [ref=e149] [cursor=pointer]
+            - button "ລໍຖ້າອະນຸມັດ" [ref=e149] [cursor=pointer]
             - button "ລາຍງານ" [ref=e150] [cursor=pointer]
           - table [ref=e153]:
             - rowgroup [ref=e154]:
@@ -242,7 +242,7 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
                 - columnheader "ເຫດຜົນ" [ref=e160]
                 - columnheader "ການຈັດການ" [ref=e161]
             - rowgroup [ref=e162]:
-              - row "ນ້ຳຟ້າ ລາດ +8562011000014 ລາພັກ (Annual) 09/05/2026 – 11/05/2026 3 ວັນ ຂໍລາພັກປະຈຳປີ ອນຸມັດ ປະຕິເສດ" [ref=e163]:
+              - row "ນ້ຳຟ້າ ລາດ +8562011000014 ລາພັກ (Annual) 09/05/2026 – 11/05/2026 3 ວັນ ຂໍລາພັກປະຈຳປີ ອະນຸມັດ ປະຕິເສດ" [ref=e163]:
                 - cell "ນ້ຳຟ້າ ລາດ +8562011000014" [ref=e164]:
                   - generic [ref=e165]:
                     - paragraph [ref=e166]: ນ້ຳຟ້າ ລາດ
@@ -251,11 +251,11 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
                 - cell "09/05/2026 – 11/05/2026" [ref=e169]
                 - cell "3 ວັນ" [ref=e170]
                 - cell "ຂໍລາພັກປະຈຳປີ" [ref=e171]
-                - cell "ອນຸມັດ ປະຕິເສດ" [ref=e172]:
+                - cell "ອະນຸມັດ ປະຕິເສດ" [ref=e172]:
                   - generic [ref=e173]:
-                    - button "ອນຸມັດ" [ref=e174] [cursor=pointer]
+                    - button "ອະນຸມັດ" [ref=e174] [cursor=pointer]
                     - button "ປະຕິເສດ" [ref=e175] [cursor=pointer]
-              - row "ນ້ຳຟ້າ ລາດ +8562011000014 ລາພັກ (Annual) 09/05/2026 – 11/05/2026 3 ວັນ ຂໍລາພັກປະຈຳປີ ອນຸມັດ ປະຕິເສດ" [ref=e176]:
+              - row "ນ້ຳຟ້າ ລາດ +8562011000014 ລາພັກ (Annual) 09/05/2026 – 11/05/2026 3 ວັນ ຂໍລາພັກປະຈຳປີ ອະນຸມັດ ປະຕິເສດ" [ref=e176]:
                 - cell "ນ້ຳຟ້າ ລາດ +8562011000014" [ref=e177]:
                   - generic [ref=e178]:
                     - paragraph [ref=e179]: ນ້ຳຟ້າ ລາດ
@@ -264,11 +264,11 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
                 - cell "09/05/2026 – 11/05/2026" [ref=e182]
                 - cell "3 ວັນ" [ref=e183]
                 - cell "ຂໍລາພັກປະຈຳປີ" [ref=e184]
-                - cell "ອນຸມັດ ປະຕິເສດ" [ref=e185]:
+                - cell "ອະນຸມັດ ປະຕິເສດ" [ref=e185]:
                   - generic [ref=e186]:
-                    - button "ອນຸມັດ" [ref=e187] [cursor=pointer]
+                    - button "ອະນຸມັດ" [ref=e187] [cursor=pointer]
                     - button "ປະຕິເສດ" [ref=e188] [cursor=pointer]
-              - row "ສຸດາ ທ +8562011000015 ລາພັກ (Annual) 07/04/2025 – 08/04/2025 2 ວັນ ຂໍລາພັກປະຈຳປີ ອນຸມັດ ປະຕິເສດ" [ref=e189]:
+              - row "ສຸດາ ທ +8562011000015 ລາພັກ (Annual) 07/04/2025 – 08/04/2025 2 ວັນ ຂໍລາພັກປະຈຳປີ ອະນຸມັດ ປະຕິເສດ" [ref=e189]:
                 - cell "ສຸດາ ທ +8562011000015" [ref=e190]:
                   - generic [ref=e191]:
                     - paragraph [ref=e192]: ສຸດາ ທ
@@ -277,11 +277,11 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
                 - cell "07/04/2025 – 08/04/2025" [ref=e195]
                 - cell "2 ວັນ" [ref=e196]
                 - cell "ຂໍລາພັກປະຈຳປີ" [ref=e197]
-                - cell "ອນຸມັດ ປະຕິເສດ" [ref=e198]:
+                - cell "ອະນຸມັດ ປະຕິເສດ" [ref=e198]:
                   - generic [ref=e199]:
-                    - button "ອນຸມັດ" [ref=e200] [cursor=pointer]
+                    - button "ອະນຸມັດ" [ref=e200] [cursor=pointer]
                     - button "ປະຕິເສດ" [ref=e201] [cursor=pointer]
-              - row "ຈັນທະລາ ສ້ານ +8562011000013 ລາໂດຍບໍ່ໄດ້ຮັບ (Unpaid) 15/04/2025 – 15/04/2025 1 ວັນ ກິດທຸລະສ່ວນຕົວ ອນຸມັດ ປະຕິເສດ" [ref=e202]:
+              - row "ຈັນທະລາ ສ້ານ +8562011000013 ລາໂດຍບໍ່ໄດ້ຮັບ (Unpaid) 15/04/2025 – 15/04/2025 1 ວັນ ກິດທຸລະສ່ວນຕົວ ອະນຸມັດ ປະຕິເສດ" [ref=e202]:
                 - cell "ຈັນທະລາ ສ້ານ +8562011000013" [ref=e203]:
                   - generic [ref=e204]:
                     - paragraph [ref=e205]: ຈັນທະລາ ສ້ານ
@@ -290,11 +290,11 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
                 - cell "15/04/2025 – 15/04/2025" [ref=e208]
                 - cell "1 ວັນ" [ref=e209]
                 - cell "ກິດທຸລະສ່ວນຕົວ" [ref=e210]
-                - cell "ອນຸມັດ ປະຕິເສດ" [ref=e211]:
+                - cell "ອະນຸມັດ ປະຕິເສດ" [ref=e211]:
                   - generic [ref=e212]:
-                    - button "ອນຸມັດ" [ref=e213] [cursor=pointer]
+                    - button "ອະນຸມັດ" [ref=e213] [cursor=pointer]
                     - button "ປະຕິເສດ" [ref=e214] [cursor=pointer]
-              - row "ສົມສັກ ວົງສາ +8562011000001 ລາພັກ (Annual) 07/02/2025 – 07/02/2025 1 ວັນ ຂໍລາພັກປະຈຳປີ ອນຸມັດ ປະຕິເສດ" [ref=e215]:
+              - row "ສົມສັກ ວົງສາ +8562011000001 ລາພັກ (Annual) 07/02/2025 – 07/02/2025 1 ວັນ ຂໍລາພັກປະຈຳປີ ອະນຸມັດ ປະຕິເສດ" [ref=e215]:
                 - cell "ສົມສັກ ວົງສາ +8562011000001" [ref=e216]:
                   - generic [ref=e217]:
                     - paragraph [ref=e218]: ສົມສັກ ວົງສາ
@@ -303,11 +303,11 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
                 - cell "07/02/2025 – 07/02/2025" [ref=e221]
                 - cell "1 ວັນ" [ref=e222]
                 - cell "ຂໍລາພັກປະຈຳປີ" [ref=e223]
-                - cell "ອນຸມັດ ປະຕິເສດ" [ref=e224]:
+                - cell "ອະນຸມັດ ປະຕິເສດ" [ref=e224]:
                   - generic [ref=e225]:
-                    - button "ອນຸມັດ" [ref=e226] [cursor=pointer]
+                    - button "ອະນຸມັດ" [ref=e226] [cursor=pointer]
                     - button "ປະຕິເສດ" [ref=e227] [cursor=pointer]
-              - row "ນາລີ ພົມມະ +8562011000002 ລາພັກ (Annual) 09/03/2026 – 13/03/2026 5 ວັນ ຂໍລາພັກປະຈຳປີ ອນຸມັດ ປະຕິເສດ" [ref=e228]:
+              - row "ນາລີ ພົມມະ +8562011000002 ລາພັກ (Annual) 09/03/2026 – 13/03/2026 5 ວັນ ຂໍລາພັກປະຈຳປີ ອະນຸມັດ ປະຕິເສດ" [ref=e228]:
                 - cell "ນາລີ ພົມມະ +8562011000002" [ref=e229]:
                   - generic [ref=e230]:
                     - paragraph [ref=e231]: ນາລີ ພົມມະ
@@ -316,11 +316,11 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
                 - cell "09/03/2026 – 13/03/2026" [ref=e234]
                 - cell "5 ວັນ" [ref=e235]
                 - cell "ຂໍລາພັກປະຈຳປີ" [ref=e236]
-                - cell "ອນຸມັດ ປະຕິເສດ" [ref=e237]:
+                - cell "ອະນຸມັດ ປະຕິເສດ" [ref=e237]:
                   - generic [ref=e238]:
-                    - button "ອນຸມັດ" [ref=e239] [cursor=pointer]
+                    - button "ອະນຸມັດ" [ref=e239] [cursor=pointer]
                     - button "ປະຕິເສດ" [ref=e240] [cursor=pointer]
-              - row "ນາລີ ພົມມະ +8562011000002 ລາພັກ (Annual) 09/03/2026 – 13/03/2026 5 ວັນ ຂໍລາພັກປະຈຳປີ ອນຸມັດ ປະຕິເສດ" [ref=e241]:
+              - row "ນາລີ ພົມມະ +8562011000002 ລາພັກ (Annual) 09/03/2026 – 13/03/2026 5 ວັນ ຂໍລາພັກປະຈຳປີ ອະນຸມັດ ປະຕິເສດ" [ref=e241]:
                 - cell "ນາລີ ພົມມະ +8562011000002" [ref=e242]:
                   - generic [ref=e243]:
                     - paragraph [ref=e244]: ນາລີ ພົມມະ
@@ -329,11 +329,11 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
                 - cell "09/03/2026 – 13/03/2026" [ref=e247]
                 - cell "5 ວັນ" [ref=e248]
                 - cell "ຂໍລາພັກປະຈຳປີ" [ref=e249]
-                - cell "ອນຸມັດ ປະຕິເສດ" [ref=e250]:
+                - cell "ອະນຸມັດ ປະຕິເສດ" [ref=e250]:
                   - generic [ref=e251]:
-                    - button "ອນຸມັດ" [ref=e252] [cursor=pointer]
+                    - button "ອະນຸມັດ" [ref=e252] [cursor=pointer]
                     - button "ປະຕິເສດ" [ref=e253] [cursor=pointer]
-              - row "ບຸນມີ ສີສຸວັນ +8562011000004 ລາພັກ (Annual) 12/04/2025 – 14/04/2025 3 ວັນ ຂໍລາພັກປະຈຳປີ ອນຸມັດ ປະຕິເສດ" [ref=e254]:
+              - row "ບຸນມີ ສີສຸວັນ +8562011000004 ລາພັກ (Annual) 12/04/2025 – 14/04/2025 3 ວັນ ຂໍລາພັກປະຈຳປີ ອະນຸມັດ ປະຕິເສດ" [ref=e254]:
                 - cell "ບຸນມີ ສີສຸວັນ +8562011000004" [ref=e255]:
                   - generic [ref=e256]:
                     - paragraph [ref=e257]: ບຸນມີ ສີສຸວັນ
@@ -342,11 +342,11 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
                 - cell "12/04/2025 – 14/04/2025" [ref=e260]
                 - cell "3 ວັນ" [ref=e261]
                 - cell "ຂໍລາພັກປະຈຳປີ" [ref=e262]
-                - cell "ອນຸມັດ ປະຕິເສດ" [ref=e263]:
+                - cell "ອະນຸມັດ ປະຕິເສດ" [ref=e263]:
                   - generic [ref=e264]:
-                    - button "ອນຸມັດ" [ref=e265] [cursor=pointer]
+                    - button "ອະນຸມັດ" [ref=e265] [cursor=pointer]
                     - button "ປະຕິເສດ" [ref=e266] [cursor=pointer]
-              - row "ບຸນມີ ສີສຸວັນ +8562011000004 ລາພັກ (Annual) 12/04/2025 – 14/04/2025 3 ວັນ ຂໍລາພັກປະຈຳປີ ອນຸມັດ ປະຕິເສດ" [ref=e267]:
+              - row "ບຸນມີ ສີສຸວັນ +8562011000004 ລາພັກ (Annual) 12/04/2025 – 14/04/2025 3 ວັນ ຂໍລາພັກປະຈຳປີ ອະນຸມັດ ປະຕິເສດ" [ref=e267]:
                 - cell "ບຸນມີ ສີສຸວັນ +8562011000004" [ref=e268]:
                   - generic [ref=e269]:
                     - paragraph [ref=e270]: ບຸນມີ ສີສຸວັນ
@@ -355,9 +355,9 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
                 - cell "12/04/2025 – 14/04/2025" [ref=e273]
                 - cell "3 ວັນ" [ref=e274]
                 - cell "ຂໍລາພັກປະຈຳປີ" [ref=e275]
-                - cell "ອນຸມັດ ປະຕິເສດ" [ref=e276]:
+                - cell "ອະນຸມັດ ປະຕິເສດ" [ref=e276]:
                   - generic [ref=e277]:
-                    - button "ອນຸມັດ" [ref=e278] [cursor=pointer]
+                    - button "ອະນຸມັດ" [ref=e278] [cursor=pointer]
                     - button "ປະຕິເສດ" [ref=e279] [cursor=pointer]
       - contentinfo [ref=e280]:
         - paragraph [ref=e281]: POWERBY SKV Group · © 2026
@@ -374,7 +374,7 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
   2  | import { loginAs } from './helpers/auth'
   3  | 
   4  | test.describe('Branch Isolation', () => {
-  5  |   test('BRANCH_MANAGER (ສາຍລົມ) should not see employees from other branches in attendance page', async ({ page }) => {
+  5  |   test('BRANCH_MANAGER (ຊ້າລົມ) should not see employees from other branches in attendance page', async ({ page }) => {
   6  |     await loginAs(page, 'branchManager')
   7  |     await page.goto('/hr/attendance')
   8  |     await page.waitForLoadState('networkidle')
@@ -402,7 +402,7 @@ Received string:        "ພະນັກງານ	ປະເພດລາພັກ
   30 |     const tableText = await page.locator('table').innerText()
   31 | 
   32 |     // Must contain employees from multiple branches
-  33 |     expect(tableText).toContain('ວິໄລ')       // branch ສາຍລົມ
+  33 |     expect(tableText).toContain('ວິໄລ')       // branch ຊ້າລົມ
   34 |     expect(tableText).toContain('ຈັນທະລາ')    // branch ປາກເຊ
   35 | 
   36 |     // Row count must exceed a single branch's employee count

@@ -1,8 +1,12 @@
+import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useMyOutsideWorkRequestsQuery } from '../../../hooks/queries/useMyOutsideWorkRequestsQuery'
 import { RequestStatusBadge } from './RequestStatusBadge'
 import { formatDateOnly } from '../../../utils/date'
+import { toast } from '../../../components/ui/Toast'
+import { useNotificationSocketContext } from '../../../context/NotificationSocketContext'
 
 interface OutsideWorkItem {
   id: string
@@ -25,8 +29,24 @@ const TYPE_LABELS: Record<string, string> = {
 
 export function OutsideWorkTab() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { data, isLoading } = useMyOutsideWorkRequestsQuery({ page: 1, limit: 20 })
   const items: OutsideWorkItem[] = (data?.data as OutsideWorkItem[]) ?? []
+
+  const { lastOutsideWorkUpdate } = useNotificationSocketContext()
+  const prevUpdateRef = useRef(lastOutsideWorkUpdate)
+
+  useEffect(() => {
+    if (lastOutsideWorkUpdate && lastOutsideWorkUpdate !== prevUpdateRef.current) {
+      prevUpdateRef.current = lastOutsideWorkUpdate
+      queryClient.invalidateQueries({ queryKey: ['outside-work', 'my'] })
+      if (lastOutsideWorkUpdate.status === 'APPROVED') {
+        toast.success('ຄຳຮ້ອງອອກນອກສະຖານທີ່ໄດ້ຮັບການອນຸມັດ')
+      } else {
+        toast.error('ຄຳຮ້ອງອອກນອກສະຖານທີ່ຖືກປະຕິເສດ')
+      }
+    }
+  }, [lastOutsideWorkUpdate, queryClient])
 
   return (
     <div className="pb-20">

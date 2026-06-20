@@ -1,22 +1,24 @@
 import { useNavigate } from 'react-router-dom'
-import { CalendarDays, MapPin, FileText, Clock, Receipt, Megaphone, type LucideIcon } from 'lucide-react'
+import { CalendarDays, MapPin, FileText, Clock, Receipt, Megaphone, ClockArrowUp, type LucideIcon } from 'lucide-react'
 
 interface MenuItem {
   label: string
   icon: LucideIcon
   path: string
+  state?: Record<string, string>
   from: string
   to: string
   iconColor: string
 }
 
 const MENU_ITEMS: MenuItem[] = [
-  { label: 'ປະຫວັດ',  icon: CalendarDays, path: '/employee/attendance/history',    from: '#EFF6FF', to: '#DBEAFE', iconColor: '#1D4ED8' },
-  { label: 'ອອກວຽກນອກ', icon: MapPin,     path: '/employee/requests/outside-work', from: '#F5F3FF', to: '#EDE9FE', iconColor: '#7C3AED' },
-  { label: 'ລາພັກ',       icon: FileText,     path: '/employee/requests/leave',         from: '#ECFDF5', to: '#D1FAE5', iconColor: '#059669' },
-  { label: 'OT',       icon: Clock,        path: '/employee/requests/ot',            from: '#FFFBEB', to: '#FEF3C7', iconColor: '#D97706' },
-  { label: 'ການເງິນ',     icon: Receipt,      path: '/employee/payslip',                from: '#ECFEFF', to: '#CFFAFE', iconColor: '#0891B2' },
-  { label: 'ປະກາດ',   icon: Megaphone,    path: '/employee/profile',                from: '#FEF2F2', to: '#FEE2E2', iconColor: '#DC2626' },
+  { label: 'ປະຫວັດ',    icon: CalendarDays,  path: '/employee/attendance/history',    from: '#EFF6FF', to: '#DBEAFE', iconColor: '#1D4ED8' },
+  { label: 'ອອກວຽກນອກ', icon: MapPin,        path: '/employee/requests/outside-work', from: '#F5F3FF', to: '#EDE9FE', iconColor: '#7C3AED' },
+  { label: 'ລາພັກ',     icon: FileText,      path: '/employee/requests/leave',         from: '#ECFDF5', to: '#D1FAE5', iconColor: '#059669' },
+  { label: 'OT',        icon: Clock,         path: '/employee/requests/ot',            from: '#FFFBEB', to: '#FEF3C7', iconColor: '#D97706' },
+  { label: 'ປັບເວລາ',   icon: ClockArrowUp,  path: '/employee/requests', state: { tab: 'attendance' }, from: '#FFF7ED', to: '#FED7AA', iconColor: '#EA580C' },
+  { label: 'ການເງິນ',   icon: Receipt,       path: '/employee/payslip',                from: '#ECFEFF', to: '#CFFAFE', iconColor: '#0891B2' },
+  { label: 'ປະກາດ',    icon: Megaphone,     path: '/employee/profile',                from: '#FEF2F2', to: '#FEE2E2', iconColor: '#DC2626' },
 ]
 
 interface MenuCardProps {
@@ -48,7 +50,7 @@ export function HomeMenuGrid() {
   return (
     <div className="grid grid-cols-3 gap-3 px-4 py-4">
       {MENU_ITEMS.map((item) => (
-        <MenuCard key={item.label} item={item} onClick={() => navigate(item.path)} />
+        <MenuCard key={item.label} item={item} onClick={() => navigate(item.path, item.state ? { state: item.state } : {})} />
       ))}
     </div>
   )

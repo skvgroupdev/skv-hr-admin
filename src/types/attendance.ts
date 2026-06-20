@@ -46,3 +46,31 @@ export interface AttendanceReportQuery {
   page?: number
   limit?: number
 }
+
+export type DayStatus = 'PRESENT' | 'LATE' | 'ABSENT' | 'EARLY_LEAVE' | 'WEEKEND'
+
+export interface DailyAttendanceRecord {
+  date: string
+  dayOfWeek: number
+  isWorkDay: boolean
+  checkIn: { time: string; status: string; lateMinutes: number } | null
+  checkOut: { time: string; status: string } | null
+  dayStatus: DayStatus
+}
+
+export interface MonthlyAttendanceSummary {
+  totalWorkDays: number
+  presentDays: number
+  lateDays: number
+  absentDays: number
+  earlyLeaveDays: number
+  onTimeRate: number
+}
+
+export interface EmployeeMonthlyAttendanceResponse {
+  employeeId: string
+  year: number
+  month: number
+  summary: MonthlyAttendanceSummary
+  dailyRecords: DailyAttendanceRecord[]
+}

@@ -11,13 +11,13 @@ import { formatDate } from '../../../utils/date'
 
 const TYPE_LABELS: Record<string, string> = {
   LEAVE_REQUEST: 'ຄຳຂໍລາພັກ',
-  LEAVE_APPROVED: 'ອນຸມັດລາພັກ',
+  LEAVE_APPROVED: 'ອະນຸມັດລາພັກ',
   LEAVE_REJECTED: 'ປະຕິເສດລາພັກ',
   OT_REQUEST: 'ຄຳຂໍ OT',
-  OT_APPROVED: 'ອນຸມັດ OT',
+  OT_APPROVED: 'ອະນຸມັດ OT',
   OT_REJECTED: 'ປະຕິເສດ OT',
   OUTSIDE_WORK_REQUEST: 'ຄຳຂໍອອກນອກ',
-  OUTSIDE_WORK_APPROVED: 'ອນຸມັດອອກນອກ',
+  OUTSIDE_WORK_APPROVED: 'ອະນຸມັດອອກນອກ',
   OUTSIDE_WORK_REJECTED: 'ປະຕິເສດອອກນອກ',
   ATTENDANCE_LATE: 'ເຂົ້າວຽກຊ້າ',
   PAYROLL_RELEASED: 'ອອກເງິນເດືອນ',

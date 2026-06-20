@@ -6,8 +6,9 @@ import { Card } from '../../../components/ui/Card'
 import { Pagination } from '../../../components/ui/Pagination'
 import { PayrollStatusBadge } from './PayrollStatusBadge'
 import type { PayslipWithEmployee } from '../../../types/payroll'
+import { getEmployeeName, getEmployeeIdString } from '../../../types/payroll'
 
-const HEADERS = ['ພະນັກງານ', 'ງວດ', 'Gross (LAK)', 'ຫັກ (LAK)', 'Net (LAK)', 'ສະຖານະ', 'ລາພັກຍລະອຽດ']
+const HEADERS = ['ພະນັກງານ', 'ງວດ', 'Gross (LAK)', 'ຫັກ (LAK)', 'Net (LAK)', 'ສະຖານະ', 'ລາຍລະອຽດ']
 
 const STATUS_LABELS: Record<string, string> = {
   DRAFT: 'ຮ່າງ',
@@ -54,20 +55,24 @@ function FilterBar({
 
 function PayslipRow({ payslip }: { payslip: PayslipWithEmployee }) {
   const navigate = useNavigate()
-  const fullName = `${payslip.employee.firstName} ${payslip.employee.lastName}`
+  const fullName = getEmployeeName(payslip)
+  const empId = getEmployeeIdString(payslip)
+  const employeeCode = typeof payslip.employeeId === 'object' ? payslip.employeeId?.employeeCode : payslip.employee?.employeeCode
   return (
     <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
       <td className="px-4 py-3">
         <button
-          onClick={() => navigate(`/hr/payroll/employees/${payslip.employeeId}`)}
+          onClick={() => navigate(`/hr/payroll/employees/${empId}`)}
           className="text-sm font-medium text-primary hover:underline text-left"
         >
           {fullName}
         </button>
-        <div className="text-xs text-gray-400">{payslip.employee.employeeCode}</div>
+        <div className="text-xs text-gray-400">{employeeCode ?? '-'}</div>
       </td>
       <td className="px-4 py-3 text-sm text-gray-600">
-        {typeof payslip.payrollPeriodId === 'string' ? payslip.payrollPeriodId.slice(-6) : '-'}
+        {typeof payslip.payrollPeriodId === 'object'
+          ? (payslip.payrollPeriodId as { name?: string })?.name ?? '-'
+          : '-'}
       </td>
       <td className="px-4 py-3 text-sm text-right text-gray-700">{payslip.grossSalary.toLocaleString()}</td>
       <td className="px-4 py-3 text-sm text-right text-gray-700">{payslip.totalDeductions.toLocaleString()}</td>
@@ -75,10 +80,10 @@ function PayslipRow({ payslip }: { payslip: PayslipWithEmployee }) {
       <td className="px-4 py-3"><PayrollStatusBadge status={payslip.status as 'DRAFT' | 'GENERATED' | 'APPROVED' | 'LOCKED'} /></td>
       <td className="px-4 py-3">
         <button
-          onClick={() => navigate(`/hr/payroll/employees/${payslip.employeeId}`)}
+          onClick={() => navigate(`/hr/payroll/employees/${empId}`)}
           className="text-xs text-primary hover:underline"
         >
-          ດູລາພັກຍລະອຽດ
+          ເບິ່ງລາຍລະອຽດ
         </button>
       </td>
     </tr>
@@ -111,8 +116,8 @@ export default function PayrollPaymentListPage() {
   return (
     <div className="p-6 space-y-5">
       <div>
-        <h1 className="text-xl font-semibold text-gray-900">ລາພັກຍການຈ່າຍທັງໝົດ</h1>
-        <p className="text-sm text-gray-500 mt-0.5">ທັງໝົດ {data?.meta.total ?? 0} ລາພັກຍການ</p>
+        <h1 className="text-xl font-semibold text-gray-900">ໃບເງິນເດືອນທັງໝົດ</h1>
+        <p className="text-sm text-gray-500 mt-0.5">ທັງໝົດ {data?.meta.total ?? 0} ລາຍການ</p>
       </div>
 
       <FilterBar
@@ -145,7 +150,7 @@ export default function PayrollPaymentListPage() {
                     </tr>
                   ))
                   : data?.data.length === 0
-                    ? <tr><td colSpan={HEADERS.length} className="py-12 text-center text-sm text-gray-500">ບໍ່ມີລາພັກຍການ</td></tr>
+                    ? <tr><td colSpan={HEADERS.length} className="py-12 text-center text-sm text-gray-500">ບໍ່ມີຂໍ້ມູນ</td></tr>
                     : data?.data.map((ps) => <PayslipRow key={ps.id} payslip={ps} />)
                 }
               </tbody>

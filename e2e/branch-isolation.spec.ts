@@ -2,7 +2,7 @@ import { test, expect } from '@playwright/test'
 import { loginAs } from './helpers/auth'
 
 test.describe('Branch Isolation', () => {
-  test('BRANCH_MANAGER (ສາຍລົມ) should not see employees from other branches in attendance page', async ({ page }) => {
+  test('BRANCH_MANAGER (ຊ້າລົມ) should not see employees from other branches in attendance page', async ({ page }) => {
     await loginAs(page, 'branchManager')
     await page.goto('/hr/attendance')
     await page.waitForLoadState('networkidle')
@@ -30,7 +30,7 @@ test.describe('Branch Isolation', () => {
     const tableText = await page.locator('table').innerText()
 
     // Must contain employees from multiple branches
-    expect(tableText).toContain('ວິໄລ')       // branch ສາຍລົມ
+    expect(tableText).toContain('ວິໄລ')       // branch ຊ້າລົມ
     expect(tableText).toContain('ຈັນທະລາ')    // branch ປາກເຊ
 
     // Row count must exceed a single branch's employee count

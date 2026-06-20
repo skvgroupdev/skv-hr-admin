@@ -14,6 +14,8 @@ import type { DocumentType, UploadDocumentDto } from '../../../types/employee'
 import { formatDateOnly } from '../../../utils/date'
 import { useAuthStore } from '../../../stores/useAuthStore'
 import { EmployeeFinanceDashboard } from '../payroll/EmployeeFinanceDashboard'
+import { EmployeeShiftCard } from './EmployeeShiftCard'
+import { EmployeeAttendanceReport } from './EmployeeAttendanceReport'
 
 // ---- Labels ----------------------------------------------------------------
 
@@ -21,8 +23,8 @@ const STATUS_LABELS: Record<string, string> = {
   ACTIVE: 'ເຄື່ອນໄຫວ',
   INACTIVE: 'ບໍ່ເຄື່ອນໄຫວ',
   PROBATION: 'ທົດລອງງານ',
-  RESIGNED: 'ລາພັກອອກ',
-  SUSPENDED: 'ໂຈນລ',
+  RESIGNED: 'ລາພັກ',
+  SUSPENDED: 'ໂຈະ',
   TERMINATED: 'ໄລ່ອອກ',
 }
 
@@ -72,6 +74,7 @@ const TABS = [
   { key: 'overview', label: 'ພາບລວມ' },
   { key: 'info', label: 'ຂໍ້ມູນສ່ວນຕົວ' },
   { key: 'salary', label: 'ເງິນເດືອນ' },
+  { key: 'attendance', label: 'ການເຂົ້າ-ອອກວຽກ' },
   { key: 'permissions', label: 'ສິດທິ' },
 ] as const
 
@@ -99,6 +102,12 @@ function OverviewTab({ employee }: { employee: Employee }) {
             <p className="text-lg font-semibold text-gray-900">
               {employee.firstName} {employee.lastName}
             </p>
+            {(employee.nickname || employee.firstNameEn || employee.lastNameEn) && (
+              <p className="text-sm text-gray-500">
+                {employee.nickname ? `(${employee.nickname}) ` : ''}
+                {[employee.firstNameEn, employee.lastNameEn].filter(Boolean).join(' ')}
+              </p>
+            )}
             <p className="text-sm text-gray-500">{employee.position?.name ?? '-'}</p>
             <p className="text-sm text-gray-500">{employee.department?.name ?? '-'}</p>
           </div>
@@ -123,6 +132,7 @@ function OverviewTab({ employee }: { employee: Employee }) {
       </div>
 
       <EmployeeFinanceDashboard employeeId={employee.id} />
+      <EmployeeShiftCard employeeId={employee.id} />
     </div>
   )
 }
@@ -142,6 +152,8 @@ function PersonalInfoTab({ employee }: { employee: Employee }) {
       <Card>
         <h2 className="text-base font-semibold text-gray-800 mb-4">ຂໍ້ມູນສ່ວນຕົວ</h2>
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          <InfoRow label="ຊື່ພາສາອັງກິດ" value={[employee.firstNameEn, employee.lastNameEn].filter(Boolean).join(' ') || undefined} />
+          <InfoRow label="ຊື່ຫຼິ້ນ" value={employee.nickname} />
           <InfoRow label="ວັນເກີດ" value={formatDateOnly(employee.dateOfBirth)} />
           <InfoRow label="ເພດ" value={GENDER_LABELS[employee.gender ?? ''] ?? employee.gender} />
           <InfoRow label="ສັນຊາດ" value={employee.nationality} />
@@ -478,12 +490,12 @@ export default function EmployeeDetailPage() {
       {activeTab === 'overview' && <OverviewTab employee={employee} />}
       {activeTab === 'info' && <PersonalInfoTab employee={employee} />}
       {activeTab === 'salary' && <SalaryTab employee={employee} />}
+      {activeTab === 'attendance' && id && <EmployeeAttendanceReport employeeId={id} />}
       {activeTab === 'permissions' && canManageRoles && (
         <PermissionsTab employee={employee} />
       )}
 
-      {/* Documents always visible */}
-      {id && <DocumentsSection employeeId={id} documents={documents} />}
+      {activeTab === 'info' && id && <DocumentsSection employeeId={id} documents={documents} />}
     </div>
   )
 }

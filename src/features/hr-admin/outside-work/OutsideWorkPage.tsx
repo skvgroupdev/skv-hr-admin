@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useOutsideWorkPendingQuery } from '../../../hooks/queries/useOutsideWorkPendingQuery'
 import { useOutsideWorkReportQuery } from '../../../hooks/queries/useOutsideWorkReportQuery'
 import {
@@ -12,12 +13,14 @@ import { cn } from '../../../lib/cn'
 import { ApprovalActionModal } from '../leave/ApprovalActionModal'
 import type { OutsideWork } from '../../../types/outside-work'
 import { formatDate } from '../../../utils/date'
+import { toast } from '../../../components/ui/Toast'
+import { useNotificationSocketContext } from '../../../context/NotificationSocketContext'
 
 type TabKey = 'pending' | 'report'
 
 const TABS: { key: TabKey; label: string }[] = [
-  { key: 'pending', label: 'ລໍຖ້າອນຸມັດ' },
-  { key: 'report', label: 'ລາພັກຍງານ' },
+  { key: 'pending', label: 'ລໍຖ້າອະນຸມັດ' },
+  { key: 'report', label: 'ລາຍງານ' },
 ]
 
 const TYPE_LABELS: Record<string, string> = {
@@ -38,7 +41,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 const STATUS_LABELS: Record<string, string> = {
   PENDING: 'ລໍຖ້າ',
-  APPROVED: 'ອນຸມັດ',
+  APPROVED: 'ອະນຸມັດ',
   REJECTED: 'ປະຕິເສດ',
 }
 
@@ -102,7 +105,7 @@ function OutsideWorkRow({ item }: { item: OutsideWork }) {
         <td className="px-4 py-3 text-sm text-gray-500 whitespace-nowrap">{formatDate(item.createdAt)}</td>
         <td className="px-4 py-3">
           <div className="flex gap-2">
-            <Button size="sm" variant="primary" onClick={() => setActionState({ open: true, action: 'approve' })}>ອນຸມັດ</Button>
+            <Button size="sm" variant="primary" onClick={() => setActionState({ open: true, action: 'approve' })}>ອະນຸມັດ</Button>
             <Button size="sm" variant="danger" onClick={() => setActionState({ open: true, action: 'reject' })}>ປະຕິເສດ</Button>
           </div>
         </td>
@@ -210,10 +213,25 @@ function ReportTab() {
 
 export default function OutsideWorkPage() {
   const [activeTab, setActiveTab] = useState<TabKey>('pending')
+  const queryClient = useQueryClient()
+  const { lastNotification } = useNotificationSocketContext()
+  const prevNotificationRef = useRef(lastNotification)
+
+  useEffect(() => {
+    if (
+      lastNotification &&
+      lastNotification !== prevNotificationRef.current &&
+      lastNotification.type === 'OUTSIDE_WORK_REQUEST'
+    ) {
+      prevNotificationRef.current = lastNotification
+      queryClient.invalidateQueries({ queryKey: ['outside-work'] })
+      toast.success('ມີຄຳຮ້ອງອອກນອກສະຖານທີ່ໃໝ່')
+    }
+  }, [lastNotification, queryClient])
 
   return (
     <div className="p-6 space-y-5">
-      <h1 className="text-xl font-semibold text-gray-900">ການອອກນອກສາຂາ</h1>
+      <h1 className="text-xl font-semibold text-gray-900">ການອອກວຽກນອກ</h1>
 
       <div className="flex gap-1 border-b border-gray-200">
         {TABS.map((tab) => (

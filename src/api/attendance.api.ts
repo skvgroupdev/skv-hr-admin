@@ -1,5 +1,10 @@
 import { apiClient } from './client'
-import type { AttendanceLog, AttendanceReportQuery, AttendanceSummary } from '../types/attendance'
+import type {
+  AttendanceLog,
+  AttendanceReportQuery,
+  AttendanceSummary,
+  EmployeeMonthlyAttendanceResponse,
+} from '../types/attendance'
 
 export interface NotCheckedInEmployee {
   id: string
@@ -37,9 +42,9 @@ export const attendanceApi = {
     return unwrap<NotCheckedInEmployee[]>(res)
   },
 
-  getSummary: async (date?: string): Promise<AttendanceSummary> => {
+  getSummary: async (params?: { date?: string; branchId?: string }): Promise<AttendanceSummary> => {
     const res = await apiClient.get('/attendance/report/summary', {
-      params: date ? { date } : {},
+      params: params ?? {},
     })
     return (res.data as { data: AttendanceSummary }).data
   },
@@ -47,5 +52,16 @@ export const attendanceApi = {
   adjust: async (id: string, note: string, adjustReason: string): Promise<AttendanceLog> => {
     const res = await apiClient.patch(`/attendance/${id}/adjust`, { note, adjustReason })
     return unwrap<AttendanceLog>(res)
+  },
+
+  getEmployeeMonthlyReport: async (
+    employeeId: string,
+    year: number,
+    month: number,
+  ): Promise<EmployeeMonthlyAttendanceResponse> => {
+    const res = await apiClient.get(`/attendance/report/employee/${employeeId}/monthly`, {
+      params: { year, month },
+    })
+    return unwrap<EmployeeMonthlyAttendanceResponse>(res)
   },
 }

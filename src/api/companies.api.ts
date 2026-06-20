@@ -1,5 +1,13 @@
 import { apiClient } from './client'
-import type { Company, PaginatedResponse, CreateCompanyRequest, CreateOwnerRequest } from '../types/company'
+import type {
+  AssignPlanRequest,
+  Company,
+  CompanyUsage,
+  CreateCompanyRequest,
+  CreateOwnerRequest,
+  PaginatedResponse,
+  UpdateSubscriptionRequest,
+} from '../types/company'
 
 interface ListParams {
   page?: number
@@ -48,5 +56,31 @@ export const companiesApi = {
 
   createOwner: async (id: string, body: CreateOwnerRequest): Promise<void> => {
     await apiClient.post(`/super/companies/${id}/create-owner`, body)
+  },
+
+  assignPlan: async (id: string, body: AssignPlanRequest): Promise<Company> => {
+    const res = await apiClient.post(`/super/companies/${id}/assign-plan`, body)
+    return unwrap<Company>(res)
+  },
+
+  updateSubscription: async (
+    id: string,
+    body: UpdateSubscriptionRequest,
+  ): Promise<Company> => {
+    const res = await apiClient.patch(`/super/companies/${id}/subscription`, body)
+    return unwrap<Company>(res)
+  },
+
+  extendSubscription: async (
+    id: string,
+    body: Pick<UpdateSubscriptionRequest, 'endDate' | 'isPaid'>,
+  ): Promise<Company> => {
+    const res = await apiClient.post(`/super/companies/${id}/subscription/extend`, body)
+    return unwrap<Company>(res)
+  },
+
+  usage: async (id: string): Promise<CompanyUsage> => {
+    const res = await apiClient.get(`/super/companies/${id}/usage`)
+    return unwrap<CompanyUsage>(res)
   },
 }

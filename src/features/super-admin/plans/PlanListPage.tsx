@@ -10,10 +10,13 @@ import type { Plan, PlanFeatures } from '../../../types/plan'
 
 const FEATURE_LABELS: Record<keyof PlanFeatures, string> = {
   attendance: 'ການເຂົ້າວຽກ',
+  shiftManagement: 'ການຈັດການກະ',
+  attendanceAdjustment: 'ຄຳຂໍແກ້ເວລາ',
   leave: 'ການລາພັກພັກ',
   ot: 'OT',
   payroll: 'ເງິນເດືອນ',
-  advancedReport: 'ລາພັກຍງານຂັ້ນສູງ',
+  restDayCompensation: 'ຊົດເຊີຍວັນພັກ',
+  advancedReport: 'ລາຍງານຂັ້ນສູງ',
   announcement: 'ປະກາດ',
 }
 

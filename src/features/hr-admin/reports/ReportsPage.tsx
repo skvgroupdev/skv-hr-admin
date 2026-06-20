@@ -20,7 +20,7 @@ export default function ReportsPage() {
     <div className="space-y-5 p-6">
       <h1 className="text-xl font-semibold text-gray-900 flex items-center gap-2">
         <BarChart3 className="h-5 w-5" />
-        ລາພັກຍງານ
+        ລາຍງານ
       </h1>
 
       <div className="flex gap-1 border-b border-gray-200">

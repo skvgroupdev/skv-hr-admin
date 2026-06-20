@@ -8,8 +8,8 @@ test.describe('HR Leave Approval', () => {
     await page.waitForLoadState('networkidle')
   })
 
-  test('should show tabs "ລໍຖ້າອນຸມັດ" and "ລາຍງານ"', async ({ page }) => {
-    await expect(page.getByRole('button', { name: 'ລໍຖ້າອນຸມັດ' })).toBeVisible()
+  test('should show tabs "ລໍຖ້າອະນຸມັດ" and "ລາຍງານ"', async ({ page }) => {
+    await expect(page.getByRole('button', { name: 'ລໍຖ້າອະນຸມັດ' })).toBeVisible()
     await expect(page.getByRole('button', { name: 'ລາຍງານ' })).toBeVisible()
   })
 
@@ -19,7 +19,7 @@ test.describe('HR Leave Approval', () => {
   })
 
   test('should open approve modal, fill comment, and confirm', async ({ page }) => {
-    const firstApproveBtn = page.getByRole('button', { name: 'ອນຸມັດ' }).first()
+    const firstApproveBtn = page.getByRole('button', { name: 'ອະນຸມັດ' }).first()
     await expect(firstApproveBtn).toBeVisible({ timeout: 10_000 })
     await firstApproveBtn.click()
 
@@ -30,7 +30,7 @@ test.describe('HR Leave Approval', () => {
     await modal.locator('textarea').fill('ໝາຍເຫດທົດສອບ')
 
     // Confirm button inside modal
-    await modal.getByRole('button', { name: 'ອນຸມັດ' }).click()
+    await modal.getByRole('button', { name: 'ອະນຸມັດ' }).click()
 
     // Modal closes after successful mutation
     await expect(modal.getByText('ອະນຸມັດຄຳຂໍ')).not.toBeVisible({ timeout: 10_000 })

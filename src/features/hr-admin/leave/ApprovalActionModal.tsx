@@ -49,7 +49,7 @@ export function ApprovalActionModal({
             onClick={handleConfirm}
             disabled={!isApprove && !comment.trim()}
           >
-            {isApprove ? 'ອນຸມັດ' : 'ປະຕິເສດ'}
+            {isApprove ? 'ອະນຸມັດ' : 'ປະຕິເສດ'}
           </Button>
         </div>
       </div>

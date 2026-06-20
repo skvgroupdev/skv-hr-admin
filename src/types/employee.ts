@@ -41,8 +41,12 @@ export interface BankAccount {
 
 export interface Employee {
   id: string
+  userId?: string
   firstName: string
   lastName: string
+  firstNameEn?: string
+  lastNameEn?: string
+  nickname?: string
   phone: string
   gender?: string
   dateOfBirth?: string
@@ -78,6 +82,9 @@ export interface Employee {
 export interface CreateEmployeeDto {
   firstName: string
   lastName: string
+  firstNameEn?: string
+  lastNameEn?: string
+  nickname?: string
   phone: string
   gender?: string
   dateOfBirth?: string

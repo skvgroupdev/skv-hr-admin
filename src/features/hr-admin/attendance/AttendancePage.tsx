@@ -8,6 +8,8 @@ import { Card } from '../../../components/ui/Card'
 import PhotoModal from '../../../components/ui/PhotoModal'
 import { cn } from '../../../lib/cn'
 import type { AttendanceLog, AttendanceStatus, AttendanceSummary } from '../../../types/attendance'
+import { useAuthStore } from '../../../stores/useAuthStore'
+import { useBranchesQuery } from '../../../hooks/queries/useBranchesQuery'
 
 interface PopulatedEmployee {
   firstName: string
@@ -91,16 +93,45 @@ function SummaryCards({ summary }: { summary: AttendanceSummary }) {
   )
 }
 
+interface Branch {
+  id: string
+  name: string
+}
+
+interface DailyFilterBarProps {
+  date: string
+  onDateChange: (d: string) => void
+  showBranchFilter: boolean
+  branches: Branch[]
+  selectedBranchId: string
+  onBranchChange: (id: string) => void
+}
+
 function DailyFilterBar({
   date,
   onDateChange,
-}: {
-  date: string
-  onDateChange: (d: string) => void
-}) {
+  showBranchFilter,
+  branches,
+  selectedBranchId,
+  onBranchChange,
+}: DailyFilterBarProps) {
   const isToday = date === todayStr()
   return (
     <div className="flex items-center gap-2">
+      {showBranchFilter && (
+        <select
+          value={selectedBranchId}
+          onChange={(e) => onBranchChange(e.target.value)}
+          className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-primary bg-white"
+        >
+          <option value="">ທຸກສາຂາ</option>
+          {branches.map((branch) => (
+            <option key={branch.id} value={branch.id}>
+              {branch.name}
+            </option>
+          ))}
+        </select>
+      )}
       <button
         onClick={() => onDateChange(todayStr())}
         className={cn(
@@ -256,27 +287,44 @@ function filterLogs(allLogs: AttendanceLogWithEmployee[], tab: TabKey) {
   return allLogs
 }
 
+const BRANCH_FILTER_ROLES = ['COMPANY_OWNER', 'HR_ADMIN'] as const
+type BranchFilterRole = (typeof BRANCH_FILTER_ROLES)[number]
+
+function isBranchFilterRole(role: string | undefined): role is BranchFilterRole {
+  return BRANCH_FILTER_ROLES.includes(role as BranchFilterRole)
+}
+
 export default function AttendancePage() {
   const [activeTab, setActiveTab] = useState<TabKey>('checkin')
   const [date, setDate] = useState(todayStr)
   const [selfieUrl, setSelfieUrl] = useState<string | null>(null)
+  const [selectedBranchId, setSelectedBranchId] = useState<string>('')
+
+  const user = useAuthStore((s) => s.user)
+  const showBranchFilter = isBranchFilterRole(user?.role)
+
+  const { data: branchesData } = useBranchesQuery({ isActive: true, limit: 100 })
+  const branches = branchesData?.data ?? []
+
+  // Only send branchId when filter is shown and a branch is selected
+  const branchIdParam = showBranchFilter && selectedBranchId ? { branchId: selectedBranchId } : {}
 
   const { data: dailyData, isLoading, isError, isFetching } = useQuery({
-    queryKey: ['attendance', 'report', 'daily', date],
-    queryFn: () => attendanceApi.getDailyReport({ date }),
+    queryKey: ['attendance', 'report', 'daily', date, selectedBranchId],
+    queryFn: () => attendanceApi.getDailyReport({ date, ...branchIdParam }),
     staleTime: 30_000,
     refetchInterval: 30_000,
   })
 
   const { data: notCheckedInData, isLoading: notCheckedInLoading } = useQuery({
-    queryKey: ['attendance', 'report', 'not-checked-in', date],
-    queryFn: () => attendanceApi.getNotCheckedInReport({ date }),
+    queryKey: ['attendance', 'report', 'not-checked-in', date, selectedBranchId],
+    queryFn: () => attendanceApi.getNotCheckedInReport({ date, ...branchIdParam }),
     enabled: activeTab === 'absent',
     staleTime: 30_000,
     refetchInterval: 30_000,
   })
 
-  const { data: summary } = useAttendanceSummaryQuery(date)
+  const { data: summary } = useAttendanceSummaryQuery({ date, ...branchIdParam })
 
   const allLogs = (dailyData as AttendanceLogWithEmployee[]) ?? []
   const displayLogs = filterLogs(allLogs, activeTab)
@@ -292,7 +340,14 @@ export default function AttendancePage() {
             ອັບເດດທຸກ 30 ວິນາທີ
           </span>
         </div>
-        <DailyFilterBar date={date} onDateChange={setDate} />
+        <DailyFilterBar
+          date={date}
+          onDateChange={setDate}
+          showBranchFilter={showBranchFilter}
+          branches={branches}
+          selectedBranchId={selectedBranchId}
+          onBranchChange={setSelectedBranchId}
+        />
       </div>
 
       {summary && <SummaryCards summary={summary} />}

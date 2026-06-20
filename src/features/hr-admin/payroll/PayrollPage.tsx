@@ -67,7 +67,7 @@ export default function PayrollPage() {
           <Link to="/hr/payroll/payslips">
             <Button variant="outline">
               <ListOrdered className="h-4 w-4" />
-              ລາພັກຍການຈ່າຍທັງໝົດ
+              ລາຍການຈ່າຍທັງໝົດ
             </Button>
           </Link>
           <Button onClick={() => setCreateModalOpen(true)}>
@@ -78,7 +78,7 @@ export default function PayrollPage() {
       </div>
 
       <div className="rounded-lg bg-blue-50 border border-blue-100 px-4 py-3 text-sm text-blue-700">
-        <strong>ຂັ້ນຕອນ:</strong> ສ້າງງວດ → ສ້າງ Payroll → ກວດສອບ → ອະນຸມັດ → ລັອກ → ເບິ່ງລາຍລະອຽດ
+        <strong>ຂັ້ນຕອນ:</strong> ສ້າງງວດ → ສ້າງ Payroll → HR ກວດສອບ → Company Owner ຈ່າຍເງິນ
       </div>
 
       <Card padding={false}>

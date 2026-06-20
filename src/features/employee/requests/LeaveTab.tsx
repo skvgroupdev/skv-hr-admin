@@ -1,10 +1,14 @@
+import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useMyLeaveRequestsQuery } from '../../../hooks/queries/useMyLeaveRequestsQuery'
 import { useMyLeaveBalanceQuery } from '../../../hooks/queries/useMyLeaveBalanceQuery'
 import { useCancelLeaveMutation } from '../../../hooks/mutations/useCancelLeaveMutation'
 import { RequestStatusBadge } from './RequestStatusBadge'
 import { formatDateOnly } from '../../../utils/date'
+import { toast } from '../../../components/ui/Toast'
+import { useNotificationSocketContext } from '../../../context/NotificationSocketContext'
 
 interface LeaveItem {
   id: string
@@ -38,9 +42,29 @@ function LeaveBalanceSection() {
 
 export function LeaveTab() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
   const { data, isLoading } = useMyLeaveRequestsQuery({ page: 1, limit: 20 })
   const cancelMutation = useCancelLeaveMutation()
   const items: LeaveItem[] = (data?.data as LeaveItem[]) ?? []
+
+  const { lastLeaveUpdate } = useNotificationSocketContext()
+  const prevLeaveUpdateRef = useRef(lastLeaveUpdate)
+
+  useEffect(() => {
+    if (lastLeaveUpdate && lastLeaveUpdate !== prevLeaveUpdateRef.current) {
+      prevLeaveUpdateRef.current = lastLeaveUpdate
+
+      queryClient.invalidateQueries({ queryKey: ['leave', 'my'] })
+      queryClient.invalidateQueries({ queryKey: ['leave', 'balance'] })
+
+      if (lastLeaveUpdate.status === 'APPROVED') {
+        toast.success('ຄຳຮ້ອງລາພັກໄດ້ຮັບການອນຸມັດ')
+      } else {
+        const reason = lastLeaveUpdate.reason ? `: ${lastLeaveUpdate.reason}` : ''
+        toast.error(`ຄຳຮ້ອງລາພັກຖືກປະຕິເສດ${reason}`)
+      }
+    }
+  }, [lastLeaveUpdate, queryClient])
 
   return (
     <div className="pb-20">

@@ -3,16 +3,18 @@ import { useLocation } from 'react-router-dom'
 import { LeaveTab } from './LeaveTab'
 import { OTTab } from './OTTab'
 import { OutsideWorkTab } from './OutsideWorkTab'
+import { AttendanceAdjustmentTab } from './AttendanceAdjustmentTab'
 
-type Tab = 'leave' | 'ot' | 'outside'
+type Tab = 'leave' | 'ot' | 'outside' | 'attendance'
 
 const TABS: { key: Tab; label: string }[] = [
   { key: 'leave', label: 'ລາພັກ' },
   { key: 'ot', label: 'OT' },
   { key: 'outside', label: 'ອອກວຽກນອກ' },
+  { key: 'attendance', label: 'ແກ້ເວລາ' },
 ]
 
-const VALID_TABS = new Set<Tab>(['leave', 'ot', 'outside'])
+const VALID_TABS = new Set<Tab>(['leave', 'ot', 'outside', 'attendance'])
 
 function resolveInitialTab(state: unknown): Tab {
   const tab = (state as { tab?: string } | null)?.tab
@@ -49,6 +51,7 @@ export default function RequestsPage() {
         {activeTab === 'leave' && <LeaveTab />}
         {activeTab === 'ot' && <OTTab />}
         {activeTab === 'outside' && <OutsideWorkTab />}
+        {activeTab === 'attendance' && <AttendanceAdjustmentTab />}
       </div>
     </div>
   )

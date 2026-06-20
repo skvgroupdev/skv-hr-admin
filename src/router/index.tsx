@@ -8,6 +8,7 @@ import { PageLoader } from '../components/ui/LoadingSpinner'
 import { useAuthStore } from '../stores/useAuthStore'
 
 const LoginPage = lazy(() => import('../features/auth/LoginPage'))
+const AdminLoginPage = lazy(() => import('../features/auth/AdminLoginPage'))
 const CompanyListPage = lazy(() => import('../features/super-admin/companies/CompanyListPage'))
 const CompanyCreatePage = lazy(() => import('../features/super-admin/companies/CompanyCreatePage'))
 const CompanyDetailPage = lazy(() => import('../features/super-admin/companies/CompanyDetailPage'))
@@ -25,6 +26,9 @@ const EmployeeDetailPage = lazy(() => import('../features/hr-admin/employees/Emp
 const ShiftListPage = lazy(() => import('../features/hr-admin/shifts/ShiftListPage'))
 const HolidayListPage = lazy(() => import('../features/hr-admin/holidays/HolidayListPage'))
 const AttendancePage = lazy(() => import('../features/hr-admin/attendance/AttendancePage'))
+const AttendanceAdjustmentsPage = lazy(() => import('../features/hr-admin/attendance/AttendanceAdjustmentsPage'))
+const HrAdjustmentListPage = lazy(() => import('../features/hr-admin/attendance-adjustments/HrAdjustmentListPage'))
+const BranchAdjustmentListPage = lazy(() => import('../features/branch-manager/attendance-adjustments/BranchAdjustmentListPage'))
 const LeavePage = lazy(() => import('../features/hr-admin/leave/LeavePage'))
 const OTPage = lazy(() => import('../features/hr-admin/ot/OTPage'))
 const OutsideWorkPage = lazy(() => import('../features/hr-admin/outside-work/OutsideWorkPage'))
@@ -33,6 +37,7 @@ const AnnouncementsPage = lazy(() => import('../features/hr-admin/announcements/
 const ReportsPage = lazy(() => import('../features/hr-admin/reports/ReportsPage'))
 const PayrollPage = lazy(() => import('../features/hr-admin/payroll/PayrollPage'))
 const HrTaxConfigPage = lazy(() => import('../features/hr-admin/settings/TaxConfigPage'))
+const WorkPolicyPage = lazy(() => import('../features/hr-admin/settings/WorkPolicyPage'))
 const PayrollPaymentListPage = lazy(() => import('../features/hr-admin/payroll/PayrollPaymentListPage'))
 const EmployeeSalaryDetailPage = lazy(() => import('../features/hr-admin/payroll/EmployeeSalaryDetailPage'))
 const PayrollReportPage = lazy(() => import('../features/hr-admin/payroll/PayrollReportPage'))
@@ -49,6 +54,7 @@ const EmpPayslipListPage = lazy(() => import('../features/employee/payslip/Paysl
 const EmpPayslipDetailPage = lazy(() => import('../features/employee/payslip/PayslipDetailPage'))
 const EmpProfilePage = lazy(() => import('../features/employee/profile/ProfilePage'))
 const EmpNotificationsPage = lazy(() => import('../features/employee/notifications/NotificationsPage'))
+const EmpAdjustmentListPage = lazy(() => import('../features/employee/attendance-adjustments/AttendanceAdjustmentListPage'))
 
 const HR_ROLES = ['COMPANY_OWNER', 'HR_ADMIN', 'BRANCH_MANAGER', 'SUPERVISOR'] as const
 const EMPLOYEE_ROLES = ['STAFF', 'SUPERVISOR', 'BRANCH_MANAGER', 'COMPANY_OWNER', 'HR_ADMIN'] as const
@@ -60,8 +66,21 @@ function RoleRedirect() {
   if (!accessToken) return <Navigate to="/login" replace />
   if (user?.role === 'SUPER_ADMIN') return <Navigate to="/super/companies" replace />
   if (user?.role === 'STAFF') return <Navigate to="/employee/home" replace />
-  if (user?.role === 'SUPERVISOR') return <Navigate to="/employee/home" replace />
-  if (user?.role === 'BRANCH_MANAGER') return <Navigate to="/employee/home" replace />
+  return <Navigate to="/hr/dashboard" replace />
+}
+
+// Guard สำหรับ login pages — ถ้า login อยู่แล้ว redirect ออก
+function StaffLoginGuard({ children }: { children: React.ReactNode }) {
+  const accessToken = useAuthStore((s) => s.accessToken)
+  if (accessToken) return <Navigate to="/employee/home" replace />
+  return <>{children}</>
+}
+
+function AdminLoginGuard({ children }: { children: React.ReactNode }) {
+  const user = useAuthStore((s) => s.user)
+  const accessToken = useAuthStore((s) => s.accessToken)
+  if (!accessToken) return <>{children}</>
+  if (user?.role === 'STAFF') return <Navigate to="/employee/home" replace />
   return <Navigate to="/hr/dashboard" replace />
 }
 
@@ -72,7 +91,11 @@ function Wrap({ children }: { children: React.ReactNode }) {
 export const router = createBrowserRouter([
   {
     path: '/login',
-    element: <Wrap><LoginPage /></Wrap>,
+    element: <StaffLoginGuard><Wrap><LoginPage /></Wrap></StaffLoginGuard>,
+  },
+  {
+    path: '/admin/login',
+    element: <AdminLoginGuard><Wrap><AdminLoginPage /></Wrap></AdminLoginGuard>,
   },
   {
     path: '/',
@@ -115,7 +138,11 @@ export const router = createBrowserRouter([
       { path: 'shifts', element: <Wrap><ShiftListPage /></Wrap> },
       { path: 'holidays', element: <Wrap><HolidayListPage /></Wrap> },
       { path: 'settings/tax-config', element: <Wrap><HrTaxConfigPage /></Wrap> },
+      { path: 'settings/work-policy', element: <Wrap><WorkPolicyPage /></Wrap> },
       { path: 'attendance', element: <Wrap><AttendancePage /></Wrap> },
+      { path: 'attendance-adjustments', element: <Wrap><AttendanceAdjustmentsPage /></Wrap> },
+      { path: 'attendance-adjustments/hr', element: <Wrap><HrAdjustmentListPage /></Wrap> },
+      { path: 'attendance-adjustments/branch', element: <Wrap><BranchAdjustmentListPage /></Wrap> },
       { path: 'leave', element: <Wrap><LeavePage /></Wrap> },
       { path: 'ot', element: <Wrap><OTPage /></Wrap> },
       { path: 'outside-work', element: <Wrap><OutsideWorkPage /></Wrap> },
@@ -148,6 +175,7 @@ export const router = createBrowserRouter([
       { path: 'payslip/:id', element: <Wrap><EmpPayslipDetailPage /></Wrap> },
       { path: 'profile', element: <Wrap><EmpProfilePage /></Wrap> },
       { path: 'notifications', element: <Wrap><EmpNotificationsPage /></Wrap> },
+      { path: 'attendance-adjustments', element: <Wrap><EmpAdjustmentListPage /></Wrap> },
     ],
   },
   {
@@ -170,4 +198,3 @@ export const router = createBrowserRouter([
     ),
   },
 ])
-

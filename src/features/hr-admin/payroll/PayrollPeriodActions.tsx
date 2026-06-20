@@ -1,10 +1,11 @@
 import { Button } from '../../../components/ui/Button'
 import {
   useGeneratePayrollMutation,
-  useApprovePayrollMutation,
-  useLockPayrollMutation,
+  useHrReviewPayrollMutation,
+  usePayPayrollMutation,
 } from '../../../hooks/mutations/usePayrollMutations'
 import type { PayrollPeriodStatus } from '../../../types/payroll'
+import { useAuthStore } from '../../../stores/useAuthStore'
 
 interface PayrollPeriodActionsProps {
   periodId: string
@@ -14,8 +15,9 @@ interface PayrollPeriodActionsProps {
 
 export function PayrollPeriodActions({ periodId, status, onViewPayslips }: PayrollPeriodActionsProps) {
   const generateMutation = useGeneratePayrollMutation()
-  const approveMutation = useApprovePayrollMutation()
-  const lockMutation = useLockPayrollMutation()
+  const reviewMutation = useHrReviewPayrollMutation()
+  const payMutation = usePayPayrollMutation()
+  const role = useAuthStore((state) => state.user?.role)
 
   return (
     <div className="flex items-center gap-2 flex-wrap">
@@ -32,34 +34,34 @@ export function PayrollPeriodActions({ periodId, status, onViewPayslips }: Payro
         </Button>
       )}
 
-      {status === 'GENERATED' && (
+      {status === 'GENERATED' && role === 'HR_ADMIN' && (
         <Button
           size="sm"
-          loading={approveMutation.isPending}
+          loading={reviewMutation.isPending}
           onClick={() => {
             if (confirm('ອະນຸມັດ payroll ງວດນີ້?'))
-              approveMutation.mutate(periodId)
+              reviewMutation.mutate(periodId)
           }}
         >
-          ອະນຸມັດ
+          HR ຢືນຢັນການກວດ
         </Button>
       )}
 
-      {status === 'APPROVED' && (
+      {status === 'HR_REVIEWED' && role === 'COMPANY_OWNER' && (
         <Button
           size="sm"
           variant="outline"
-          loading={lockMutation.isPending}
+          loading={payMutation.isPending}
           onClick={() => {
-            if (confirm('ລັອກ payroll ງວດນີ້? ບໍ່ສາມາດແກ້ໄຂໄດ້ອີກ'))
-              lockMutation.mutate(periodId)
+            if (confirm('ຢືນຢັນການຈ່າຍ payroll? ຫຼັງຈາກນີ້ຈະແກ້ໄຂບໍ່ໄດ້'))
+              payMutation.mutate(periodId)
           }}
         >
-          ລັອກ
+          ຈ່າຍເງິນ
         </Button>
       )}
 
-      {(status === 'APPROVED' || status === 'LOCKED') && (
+      {status !== 'DRAFT' && (
         <Button size="sm" variant="ghost" onClick={onViewPayslips}>
           ເບິ່ງລາຍລະອຽດ
         </Button>

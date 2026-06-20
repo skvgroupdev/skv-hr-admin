@@ -10,7 +10,10 @@ export function EmployeeTopBar() {
 
   return (
     <header className="bg-gradient-to-r from-[#1A3A6B] to-[#0F2347] text-white px-4 h-14 flex items-center justify-between shrink-0">
-      <span className="text-lg font-semibold tracking-wide">SKV HR</span>
+      <div>
+        <span className="text-lg font-semibold tracking-wide">SKV HR</span>
+        <span className="ml-1.5 text-[10px] text-white/40">v1.0.0</span>
+      </div>
 
       <button
         onClick={() => navigate('/employee/notifications')}

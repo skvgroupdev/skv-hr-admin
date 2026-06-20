@@ -21,8 +21,8 @@ const STATUS_LABELS: Record<EmployeeStatus, string> = {
   ACTIVE: 'ເຄື່ອນໄຫວ',
   INACTIVE: 'ບໍ່ເຄື່ອນໄຫວ',
   PROBATION: 'ທົດລອງງານ',
-  RESIGNED: 'ລາພັກອອກ',
-  SUSPENDED: 'ໂຈນລ',
+  RESIGNED: 'ລາພັກ',
+  SUSPENDED: 'ໂຈະ',
   TERMINATED: 'ໄລ່ອອກ',
 }
 
@@ -70,6 +70,12 @@ function EmployeeRow({ employee }: EmployeeRowProps) {
         >
           {employee.firstName} {employee.lastName}
         </button>
+        {(employee.nickname || employee.firstNameEn || employee.lastNameEn) && (
+          <div className="text-xs text-gray-400">
+            {employee.nickname ? `(${employee.nickname}) ` : ''}
+            {[employee.firstNameEn, employee.lastNameEn].filter(Boolean).join(' ')}
+          </div>
+        )}
       </td>
       <td className="px-4 py-3 text-sm text-gray-600">{employee.employeeCode ?? '-'}</td>
       <td className="px-4 py-3 text-sm text-gray-600">{employee.branch?.name ?? '-'}</td>

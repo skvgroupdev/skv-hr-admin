@@ -26,3 +26,25 @@ export interface CreateShiftDto {
 }
 
 export interface UpdateShiftDto extends Partial<CreateShiftDto> {}
+
+export interface ShiftAssignment {
+  id: string
+  employeeId: string
+  shiftId: Shift
+  effectiveDate: string
+  endDate?: string
+  status?: string
+  createdAt?: string
+}
+
+export interface BulkAssignShiftRequest {
+  shiftId: string
+  employeeIds: string[]
+  effectiveDate: string
+  endDate?: string
+}
+
+export interface BulkAssignResult {
+  success: ShiftAssignment[]
+  failed: { employeeId: string; reason: string }[]
+}

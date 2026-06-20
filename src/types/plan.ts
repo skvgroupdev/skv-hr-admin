@@ -1,8 +1,11 @@
 export interface PlanFeatures {
   attendance: boolean
+  shiftManagement: boolean
+  attendanceAdjustment: boolean
   leave: boolean
   ot: boolean
   payroll: boolean
+  restDayCompensation: boolean
   advancedReport: boolean
   announcement: boolean
 }

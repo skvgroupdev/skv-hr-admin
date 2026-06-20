@@ -1,9 +1,13 @@
+import { useEffect, useRef } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Plus } from 'lucide-react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useMyOTRequestsQuery } from '../../../hooks/queries/useMyOTRequestsQuery'
 import { useCancelOTMutation } from '../../../hooks/mutations/useCancelOTMutation'
 import { RequestStatusBadge } from './RequestStatusBadge'
 import { formatDateOnly } from '../../../utils/date'
+import { useNotificationSocketContext } from '../../../context/NotificationSocketContext'
+import { toast } from '../../../components/ui/Toast'
 
 interface OTItem {
   id: string
@@ -20,9 +24,24 @@ function formatHHMM(iso: string): string {
 
 export function OTTab() {
   const navigate = useNavigate()
+  const queryClient = useQueryClient()
+  const { lastOTUpdate } = useNotificationSocketContext()
+  const prevOTUpdate = useRef(lastOTUpdate)
+
   const { data, isLoading } = useMyOTRequestsQuery({ page: 1, limit: 20 })
   const cancelMutation = useCancelOTMutation()
   const items: OTItem[] = (data?.data as OTItem[]) ?? []
+
+  useEffect(() => {
+    if (!lastOTUpdate || lastOTUpdate === prevOTUpdate.current) return
+    prevOTUpdate.current = lastOTUpdate
+    void queryClient.invalidateQueries({ queryKey: ['ot', 'my'] })
+    if (lastOTUpdate.status === 'APPROVED') {
+      toast.success('ຄຳຮ້ອງ OT ໄດ້ຮັບການອະນຸມັດ')
+    } else {
+      toast.error('ຄຳຮ້ອງ OT ຖືກປະຕິເສດ')
+    }
+  }, [lastOTUpdate, queryClient])
 
   return (
     <div className="pb-20">

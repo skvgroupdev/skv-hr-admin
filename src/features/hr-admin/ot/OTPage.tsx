@@ -1,4 +1,5 @@
-import { useState } from 'react'
+import { useState, useEffect, useRef } from 'react'
+import { useQueryClient } from '@tanstack/react-query'
 import { useOTPendingQuery } from '../../../hooks/queries/useOTPendingQuery'
 import { useOTReportQuery } from '../../../hooks/queries/useOTReportQuery'
 import { useApproveOTMutation, useRejectOTMutation } from '../../../hooks/mutations/useOTMutations'
@@ -10,13 +11,15 @@ import { OTPolicyCard } from './OTPolicyCard'
 import { ApprovalActionModal } from '../leave/ApprovalActionModal'
 import type { OTRequest } from '../../../types/ot'
 import { formatDateOnly } from '../../../utils/date'
+import { useNotificationSocketContext } from '../../../context/NotificationSocketContext'
+import { toast } from '../../../components/ui/Toast'
 
 type TabKey = 'policy' | 'pending' | 'report'
 
 const TABS: { key: TabKey; label: string }[] = [
   { key: 'policy', label: 'ນະໂຍບາຍ OT' },
-  { key: 'pending', label: 'ລໍຖ້າອນຸມັດ' },
-  { key: 'report', label: 'ລາພັກຍງານ' },
+  { key: 'pending', label: 'ລໍຖ້າອະນຸມັດ' },
+  { key: 'report', label: 'ລາຍງານ' },
 ]
 
 const STATUS_COLORS: Record<string, string> = {
@@ -28,7 +31,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 const STATUS_LABELS: Record<string, string> = {
   PENDING: 'ລໍຖ້າ',
-  APPROVED: 'ອນຸມັດ',
+  APPROVED: 'ອະນຸມັດ',
   REJECTED: 'ປະຕິເສດ',
   CANCELLED: 'ຍົກເລີກ',
 }
@@ -62,7 +65,7 @@ function OTRequestRow({ request }: { request: OTRequest }) {
         <td className="px-4 py-3 text-sm text-gray-500 max-w-40 truncate">{request.reason}</td>
         <td className="px-4 py-3">
           <div className="flex gap-2">
-            <Button size="sm" variant="primary" onClick={() => setActionState({ open: true, action: 'approve' })}>ອນຸມັດ</Button>
+            <Button size="sm" variant="primary" onClick={() => setActionState({ open: true, action: 'approve' })}>ອະນຸມັດ</Button>
             <Button size="sm" variant="danger" onClick={() => setActionState({ open: true, action: 'reject' })}>ປະຕິເສດ</Button>
           </div>
         </td>
@@ -168,6 +171,17 @@ function ReportTab() {
 
 export default function OTPage() {
   const [activeTab, setActiveTab] = useState<TabKey>('policy')
+  const queryClient = useQueryClient()
+  const { lastNotification } = useNotificationSocketContext()
+  const prevNotification = useRef(lastNotification)
+
+  useEffect(() => {
+    if (!lastNotification || lastNotification === prevNotification.current) return
+    if (lastNotification.type !== 'OT_REQUEST') return
+    prevNotification.current = lastNotification
+    void queryClient.invalidateQueries({ queryKey: ['ot', 'pending'] })
+    toast.success('ມີຄຳຮ້ອງ OT ໃໝ່')
+  }, [lastNotification, queryClient])
 
   return (
     <div className="p-6 space-y-5">

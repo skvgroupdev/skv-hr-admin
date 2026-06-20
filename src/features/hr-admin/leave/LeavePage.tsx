@@ -13,7 +13,7 @@ import { formatDateOnly } from '../../../utils/date'
 type TabKey = 'pending' | 'report'
 
 const TABS: { key: TabKey; label: string }[] = [
-  { key: 'pending', label: 'ລໍຖ້າອນຸມັດ' },
+  { key: 'pending', label: 'ລໍຖ້າອະນຸມັດ' },
   { key: 'report', label: 'ລາຍງານ' },
 ]
 
@@ -26,7 +26,7 @@ const STATUS_COLORS: Record<string, string> = {
 
 const STATUS_LABELS: Record<string, string> = {
   PENDING: 'ລໍຖ້າ',
-  APPROVED: 'ອນຸມັດ',
+  APPROVED: 'ອະນຸມັດ',
   REJECTED: 'ປະຕິເສດ',
   CANCELLED: 'ຍົກເລີກ',
 }
@@ -91,7 +91,7 @@ function PendingLeaveRow({ request }: { request: LeaveRequest }) {
         <td className="px-4 py-3 text-sm text-gray-500 max-w-48 truncate">{request.reason}</td>
         <td className="px-4 py-3">
           <div className="flex gap-2">
-            <Button size="sm" variant="primary" onClick={() => setActionState({ open: true, action: 'approve' })}>ອນຸມັດ</Button>
+            <Button size="sm" variant="primary" onClick={() => setActionState({ open: true, action: 'approve' })}>ອະນຸມັດ</Button>
             <Button size="sm" variant="danger" onClick={() => setActionState({ open: true, action: 'reject' })}>ປະຕິເສດ</Button>
           </div>
         </td>

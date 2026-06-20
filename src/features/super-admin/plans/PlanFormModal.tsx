@@ -13,18 +13,24 @@ interface PlanFormModalProps {
 
 const FEATURE_LABELS: Record<keyof PlanFeatures, string> = {
   attendance: 'ການເຂົ້າວຽກ',
+  shiftManagement: 'ການຈັດການກະ',
+  attendanceAdjustment: 'ຄຳຂໍແກ້ເວລາ',
   leave: 'ການລາພັກພັກ',
   ot: 'OT',
   payroll: 'ເງິນເດືອນ',
-  advancedReport: 'ລາພັກຍງານຂັ້ນສູງ',
+  restDayCompensation: 'ຊົດເຊີຍວັນພັກ',
+  advancedReport: 'ລາຍງານຂັ້ນສູງ',
   announcement: 'ປະກາດ',
 }
 
 const defaultFeatures = (): PlanFeatures => ({
   attendance: true,
+  shiftManagement: false,
+  attendanceAdjustment: false,
   leave: true,
   ot: true,
   payroll: false,
+  restDayCompensation: false,
   advancedReport: false,
   announcement: true,
 })

@@ -63,6 +63,7 @@ export function Sidebar() {
       {/* Brand */}
       <div className="border-t border-white/10 px-4 py-3 text-center">
         <p className="text-xs text-white/40">ສະໜອງໂດຍ SKV Group</p>
+        <p className="text-[10px] text-white/25 mt-0.5">v1.0.0</p>
       </div>
     </aside>
   )
