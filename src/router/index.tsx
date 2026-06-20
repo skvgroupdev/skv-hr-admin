@@ -71,15 +71,20 @@ function RoleRedirect() {
 
 // Guard สำหรับ login pages — ถ้า login อยู่แล้ว redirect ออก
 function StaffLoginGuard({ children }: { children: React.ReactNode }) {
+  const user = useAuthStore((s) => s.user)
   const accessToken = useAuthStore((s) => s.accessToken)
-  if (accessToken) return <Navigate to="/employee/home" replace />
-  return <>{children}</>
+  if (!accessToken) return <>{children}</>
+  if (user?.role === 'SUPER_ADMIN') return <Navigate to="/super/companies" replace />
+  if (user?.role && !['STAFF', 'SUPERVISOR', 'BRANCH_MANAGER', 'COMPANY_OWNER', 'HR_ADMIN'].includes(user.role))
+    return <Navigate to="/hr/dashboard" replace />
+  return <Navigate to="/employee/home" replace />
 }
 
 function AdminLoginGuard({ children }: { children: React.ReactNode }) {
   const user = useAuthStore((s) => s.user)
   const accessToken = useAuthStore((s) => s.accessToken)
   if (!accessToken) return <>{children}</>
+  if (user?.role === 'SUPER_ADMIN') return <Navigate to="/super/companies" replace />
   if (user?.role === 'STAFF') return <Navigate to="/employee/home" replace />
   return <Navigate to="/hr/dashboard" replace />
 }
