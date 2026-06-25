@@ -2,62 +2,79 @@ import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
-  BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
+  Filler,
   Legend,
   type ChartOptions,
   type TooltipItem,
 } from 'chart.js'
-import { Bar } from 'react-chartjs-2'
+import { Line } from 'react-chartjs-2'
 import type { MonthlyStatItem } from '../../../types/dashboard'
 
-ChartJS.register(CategoryScale, LinearScale, BarElement, Title, Tooltip, Legend)
+ChartJS.register(CategoryScale, LinearScale, PointElement, LineElement, Title, Tooltip, Filler, Legend)
 
 const MONTH_LABELS = ['ມ.ກ', 'ກ.ພ', 'ມ.ນ', 'ມ.ສ', 'ພ.ຈ', 'ມ.ຖ', 'ກ.ລ', 'ສ.ຫ', 'ກ.ຍ', 'ຕ.ລ', 'ພ.ຈ', 'ທ.ວ']
 
-interface MonthlyChartProps {
+interface AttendanceTrendChartProps {
   stats: MonthlyStatItem[]
   isLoading: boolean
 }
 
-export function MonthlyChart({ stats, isLoading }: MonthlyChartProps) {
+export function AttendanceTrendChart({ stats, isLoading }: AttendanceTrendChartProps) {
   const labels = stats.map((s) => MONTH_LABELS[s.month - 1] ?? `M${s.month}`)
+
+  // Use combined activity (leave + OT) as a proxy for "workforce engagement" trend
+  const otData = stats.map((s) => s.otCount)
+  const leaveData = stats.map((s) => s.leaveCount)
 
   const data = {
     labels,
     datasets: [
       {
-        label: 'ລາພັກ',
-        data: stats.map((s) => s.leaveCount),
-        backgroundColor: 'rgba(217, 119, 6, 0.85)',
-        hoverBackgroundColor: 'rgba(245, 158, 11, 1)',
-        borderRadius: 6,
-        borderSkipped: false as const,
-        maxBarThickness: 32,
+        label: 'OT (ຊົ່ວໂມງ)',
+        data: otData,
+        borderColor: '#7c3aed',
+        backgroundColor: 'rgba(124, 58, 237, 0.08)',
+        borderWidth: 2.5,
+        pointBackgroundColor: '#7c3aed',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        tension: 0.4,
+        fill: true,
       },
       {
-        label: 'OT',
-        data: stats.map((s) => s.otCount),
-        backgroundColor: 'rgba(109, 40, 217, 0.85)',
-        hoverBackgroundColor: 'rgba(124, 58, 237, 1)',
-        borderRadius: 6,
-        borderSkipped: false as const,
-        maxBarThickness: 32,
+        label: 'ລາພັກ (ຄັ້ງ)',
+        data: leaveData,
+        borderColor: '#d97706',
+        backgroundColor: 'rgba(217, 119, 6, 0.06)',
+        borderWidth: 2.5,
+        pointBackgroundColor: '#d97706',
+        pointBorderColor: '#fff',
+        pointBorderWidth: 2,
+        pointRadius: 4,
+        pointHoverRadius: 6,
+        tension: 0.4,
+        fill: true,
       },
     ],
   }
 
-  const options: ChartOptions<'bar'> = {
+  const options: ChartOptions<'line'> = {
     responsive: true,
     maintainAspectRatio: false,
+    interaction: { mode: 'index', intersect: false },
     plugins: {
       legend: {
         position: 'bottom',
         labels: {
           padding: 16,
           usePointStyle: true,
-          pointStyle: 'rectRounded',
+          pointStyle: 'circle',
           font: { size: 12, family: 'inherit' },
           color: '#6b7280',
         },
@@ -69,10 +86,9 @@ export function MonthlyChart({ stats, isLoading }: MonthlyChartProps) {
         bodyColor: '#cbd5e1',
         borderColor: '#334155',
         borderWidth: 1,
-        titleFont: { size: 13, weight: 'bold', family: 'inherit' },
         bodyFont: { size: 12, family: 'inherit' },
         callbacks: {
-          label: (ctx: TooltipItem<'bar'>) => ` ${ctx.dataset.label}: ${ctx.parsed.y} ຄັ້ງ`,
+          label: (ctx: TooltipItem<'line'>) => ` ${ctx.dataset.label}: ${ctx.parsed.y}`,
         },
       },
     },
@@ -98,15 +114,15 @@ export function MonthlyChart({ stats, isLoading }: MonthlyChartProps) {
   return (
     <div className="rounded-2xl bg-white shadow-sm border border-gray-100 hover:shadow-md transition-shadow">
       <div className="px-5 py-4 border-b border-gray-50">
-        <h2 className="text-base font-semibold text-gray-800">ລາພັກ / OT ລາຍເດືອນ ({new Date().getFullYear()})</h2>
-        <p className="text-xs text-gray-400 mt-0.5">ສະຫຼຸບຈໍານວນການລາ ແລະ OT ທັງໝົດ</p>
+        <h2 className="text-base font-semibold text-gray-800">Trend OT ແລະ ລາພັກ ລາຍເດືອນ</h2>
+        <p className="text-xs text-gray-400 mt-0.5">ແນວໂນ້ມການລາ ແລະ OT ຕະຫຼອດປີ {new Date().getFullYear()}</p>
       </div>
       <div className="p-5">
         {isLoading ? (
-          <div className="h-56 animate-pulse rounded-xl bg-gray-100" />
+          <div className="h-48 animate-pulse rounded-xl bg-gray-100" />
         ) : (
-          <div style={{ height: 240 }}>
-            <Bar data={data} options={options} />
+          <div style={{ height: 200 }}>
+            <Line data={data} options={options} />
           </div>
         )}
       </div>

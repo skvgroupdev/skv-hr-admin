@@ -45,3 +45,38 @@ export interface DashboardData {
 export interface DashboardResponse {
   data: DashboardData
 }
+
+export interface TodayOverviewEmployee {
+  id: string
+  firstName: string
+  lastName: string
+  employeeCode?: string
+}
+
+export interface TodayLeaveItem {
+  employeeId: string
+  employee: TodayOverviewEmployee | null
+  status: 'PENDING' | 'APPROVED'
+  leaveTypeName: string | null
+}
+
+export interface TodayOutsideWorkItem {
+  employeeId: string
+  employee: TodayOverviewEmployee | null
+  status: 'PENDING' | 'APPROVED'
+  outsideType: string
+}
+
+export interface TodayAdjustmentItem {
+  employeeId: string
+  employee: TodayOverviewEmployee | null
+  status: 'PENDING' | 'APPROVED'
+  workDate: string
+  type: string
+}
+
+export interface TodayOverview {
+  leave: TodayLeaveItem[]
+  outsideWork: TodayOutsideWorkItem[]
+  adjustments: TodayAdjustmentItem[]
+}

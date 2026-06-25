@@ -1,5 +1,5 @@
 import axios from 'axios'
-import { useAuthStore } from '../stores/useAuthStore'
+import { useAuthStore, getLoginPath } from '../stores/useAuthStore'
 
 const BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:4000/api/v1'
 
@@ -37,8 +37,9 @@ apiClient.interceptors.response.use(
 
     const refreshToken = useAuthStore.getState().getRefreshToken()
     if (!refreshToken) {
+      const role = useAuthStore.getState().user?.role
       useAuthStore.getState().logout()
-      window.location.href = '/login'
+      window.location.href = getLoginPath(role)
       return Promise.reject(error)
     }
 
@@ -64,8 +65,9 @@ apiClient.interceptors.response.use(
       originalRequest.headers.Authorization = `Bearer ${accessToken}`
       return apiClient(originalRequest)
     } catch {
+      const role = useAuthStore.getState().user?.role
       useAuthStore.getState().logout()
-      window.location.href = '/login'
+      window.location.href = getLoginPath(role)
       return Promise.reject(error)
     } finally {
       isRefreshing = false

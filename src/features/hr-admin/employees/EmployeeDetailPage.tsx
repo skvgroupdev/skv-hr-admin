@@ -1,10 +1,12 @@
 import { useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
-import { FileText, Upload } from 'lucide-react'
+import { Eye, EyeOff, FileText, KeyRound, Trash2, Upload } from 'lucide-react'
 import { useEmployeeQuery } from '../../../hooks/queries/useEmployeeQuery'
 import { useEmployeeDocumentsQuery } from '../../../hooks/queries/useEmployeeDocumentsQuery'
 import { useUploadDocumentMutation } from '../../../hooks/mutations/useUploadDocumentMutation'
 import { useEmployeePayslipsQuery } from '../../../hooks/queries/usePayrollQuery'
+import { useDeleteEmployeeMutation } from '../../../hooks/mutations/useDeleteEmployeeMutation'
+import { useHrChangePasswordMutation } from '../../../hooks/mutations/useHrChangePasswordMutation'
 import { Button } from '../../../components/ui/Button'
 import { Card } from '../../../components/ui/Card'
 import { Modal } from '../../../components/ui/Modal'
@@ -13,6 +15,7 @@ import { PageLoader } from '../../../components/ui/LoadingSpinner'
 import type { DocumentType, UploadDocumentDto } from '../../../types/employee'
 import { formatDateOnly } from '../../../utils/date'
 import { useAuthStore } from '../../../stores/useAuthStore'
+import { toast } from '../../../components/ui/Toast'
 import { EmployeeFinanceDashboard } from '../payroll/EmployeeFinanceDashboard'
 import { EmployeeShiftCard } from './EmployeeShiftCard'
 import { EmployeeAttendanceReport } from './EmployeeAttendanceReport'
@@ -255,6 +258,84 @@ function PermissionsTab({ employee }: { employee: Employee }) {
   )
 }
 
+// ---- Change Password modal --------------------------------------------------
+
+function ChangePasswordModal({
+  employeeId,
+  employeeName,
+  open,
+  onClose,
+}: {
+  employeeId: string
+  employeeName: string
+  open: boolean
+  onClose: () => void
+}) {
+  const [newPassword, setNewPassword] = useState('')
+  const [showPassword, setShowPassword] = useState(false)
+  const [error, setError] = useState('')
+  const mutation = useHrChangePasswordMutation()
+
+  const handleClose = () => {
+    setNewPassword('')
+    setError('')
+    setShowPassword(false)
+    onClose()
+  }
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault()
+    if (newPassword.trim().length < 6) {
+      setError('ລະຫັດຜ່ານໃໝ່ຕ້ອງມີຢ່າງນ້ອຍ 6 ຕົວ')
+      return
+    }
+    try {
+      await mutation.mutateAsync({ id: employeeId, newPassword: newPassword.trim() })
+      toast.success('ເປີ່ຽນລະຫັດຜ່ານສຳເລັດ')
+      handleClose()
+    } catch {
+      setError('ເກີດຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່')
+    }
+  }
+
+  return (
+    <Modal open={open} title={`ເປີ່ຽນລະຫັດຜ່ານ — ${employeeName}`} onClose={handleClose}>
+      <form onSubmit={handleSubmit} className="space-y-4">
+        <div className="relative">
+          <Input
+            label="ລະຫັດຜ່ານໃໝ່ *"
+            type={showPassword ? 'text' : 'password'}
+            value={newPassword}
+            onChange={(e) => {
+              setNewPassword(e.target.value)
+              setError('')
+            }}
+            placeholder="ຢ່າງນ້ອຍ 6 ຕົວ"
+          />
+          <button
+            type="button"
+            onClick={() => setShowPassword((v) => !v)}
+            className="absolute right-3 top-[34px] text-gray-400 hover:text-gray-600"
+            tabIndex={-1}
+            aria-label={showPassword ? 'ເຊື່ອງລະຫັດຜ່ານ' : 'ສະແດງລະຫັດຜ່ານ'}
+          >
+            {showPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+          </button>
+        </div>
+        {error && <p className="text-sm text-red-600">{error}</p>}
+        <div className="flex justify-end gap-2 pt-2">
+          <Button type="button" variant="outline" onClick={handleClose}>
+            ຍົກເລີກ
+          </Button>
+          <Button type="submit" loading={mutation.isPending}>
+            ບັນທຶກ
+          </Button>
+        </div>
+      </form>
+    </Modal>
+  )
+}
+
 // ---- Upload modal -----------------------------------------------------------
 
 interface UploadFormState {
@@ -425,12 +506,14 @@ export default function EmployeeDetailPage() {
   const navigate = useNavigate()
   const { id } = useParams<{ id: string }>()
   const [activeTab, setActiveTab] = useState<TabKey>('overview')
+  const [changePasswordOpen, setChangePasswordOpen] = useState(false)
 
   const currentUser = useAuthStore((s) => s.user)
   const canManageRoles = currentUser?.role === 'COMPANY_OWNER' || currentUser?.role === 'HR_ADMIN'
 
   const { data: employee, isLoading } = useEmployeeQuery(id ?? '')
   const { data: documents } = useEmployeeDocumentsQuery(id ?? '')
+  const deleteMutation = useDeleteEmployeeMutation()
 
   if (isLoading) return <PageLoader />
   if (!employee) {
@@ -439,6 +522,13 @@ export default function EmployeeDetailPage() {
         <p className="text-gray-500">ບໍ່ພົບຂໍ້ມູນພະນັກງານ</p>
       </div>
     )
+  }
+
+  const handleDelete = () => {
+    if (!confirm(`ຕ້ອງການລຶບພະນັກງານ ${employee.firstName} ${employee.lastName} ອອກຈາກລະບົບ?`)) return
+    deleteMutation.mutate(id!, {
+      onSuccess: () => navigate('/hr/employees'),
+    })
   }
 
   const visibleTabs = canManageRoles
@@ -459,9 +549,30 @@ export default function EmployeeDetailPage() {
           </p>
         </div>
         <div className="flex gap-2">
+          {canManageRoles && (
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={() => setChangePasswordOpen(true)}
+            >
+              <KeyRound className="h-4 w-4" />
+              ເປີ່ຽນລະຫັດຜ່ານ
+            </Button>
+          )}
           <Button variant="outline" onClick={() => navigate(`/hr/employees/${id}/edit`)}>
             ແກ້ໄຂ
           </Button>
+          {canManageRoles && (
+            <Button
+              variant="danger"
+              size="sm"
+              loading={deleteMutation.isPending}
+              onClick={handleDelete}
+            >
+              <Trash2 className="h-4 w-4" />
+              ລຶບ
+            </Button>
+          )}
           <Button variant="ghost" onClick={() => navigate('/hr/employees')}>
             ກັບຄືນ
           </Button>
@@ -496,6 +607,15 @@ export default function EmployeeDetailPage() {
       )}
 
       {activeTab === 'info' && id && <DocumentsSection employeeId={id} documents={documents} />}
+
+      {id && (
+        <ChangePasswordModal
+          employeeId={id}
+          employeeName={`${employee.firstName} ${employee.lastName}`}
+          open={changePasswordOpen}
+          onClose={() => setChangePasswordOpen(false)}
+        />
+      )}
     </div>
   )
 }

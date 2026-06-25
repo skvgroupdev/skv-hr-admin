@@ -11,6 +11,14 @@ const EMPLOYEE_ROLES = ['STAFF'] as const
 const getStorage = (role?: string): Storage =>
   EMPLOYEE_ROLES.includes(role as (typeof EMPLOYEE_ROLES)[number]) ? localStorage : sessionStorage
 
+// Employee roles go back to /login; all other roles go to /admin/login
+export const ADMIN_ROLES = ['SUPER_ADMIN', 'COMPANY_OWNER', 'HR_ADMIN', 'BRANCH_MANAGER', 'SUPERVISOR'] as const
+
+export function getLoginPath(role?: string | null): string {
+  if (!role) return '/login'
+  return ADMIN_ROLES.includes(role as (typeof ADMIN_ROLES)[number]) ? '/admin/login' : '/login'
+}
+
 interface AuthStore {
   accessToken: string | null
   user: User | null

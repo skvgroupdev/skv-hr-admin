@@ -3,7 +3,6 @@ import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { z } from 'zod'
 import { Eye, EyeOff } from 'lucide-react'
-import { Link } from 'react-router-dom'
 import { useLoginMutation } from './useAuth'
 import { Input } from '../../components/ui/Input'
 import { Button } from '../../components/ui/Button'
@@ -56,18 +55,18 @@ export default function AdminLoginPage() {
   }
 
   return (
-    <div className="flex min-h-screen flex-col bg-gray-50">
+    <div className="flex min-h-screen flex-col bg-[#0D2B6B]">
       <main className="flex flex-1 items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           {/* Logo */}
           <div className="mb-8 flex flex-col items-center">
             <img src="/skv-hr-logo.png" alt="SKV HR" className="h-16 w-auto object-contain mb-4" />
-            <h1 className="text-2xl font-semibold text-gray-900">ເຂົ້າສູ່ລະບົບຜູ້ດູແລລະບົບ</h1>
-            <p className="mt-1 text-sm text-gray-500">SKV HR - ລະບົບຈັດການບຸກຄະລາພັກກອນ</p>
+            <h1 className="text-2xl font-semibold text-white">ຈັດການລະບົບ HR</h1>
+            <p className="mt-1 text-sm text-blue-200">Admin / HR Login — SKV HR Platform</p>
           </div>
 
           {/* Card */}
-          <div className="rounded-xl bg-white shadow-sm border border-gray-100 p-8">
+          <div className="rounded-xl bg-white shadow-lg p-8">
             <form onSubmit={handleSubmit(onSubmit)} className="space-y-5" noValidate>
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">ເບີໂທລະສັບ</label>
@@ -78,7 +77,7 @@ export default function AdminLoginPage() {
                   <input
                     type="tel"
                     placeholder="20 XXXX XXXX"
-                    className="flex-1 rounded-r-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    className="flex-1 rounded-r-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-[#0D2B6B] focus:border-transparent"
                     {...register('phone')}
                   />
                 </div>
@@ -127,13 +126,6 @@ export default function AdminLoginPage() {
               </Button>
             </form>
           </div>
-
-          <p className="mt-4 text-center text-sm text-gray-500">
-            ພະນັກງານ?{' '}
-            <Link to="/login" className="text-primary font-medium hover:underline">
-              ເຂົ້າສູ່ລະບົບທີ່ນີ້
-            </Link>
-          </p>
         </div>
       </main>
 

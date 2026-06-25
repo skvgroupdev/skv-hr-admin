@@ -1,14 +1,19 @@
 import { apiClient } from './client'
-import type { DashboardData } from '../types/dashboard'
+import type { DashboardData, TodayOverview } from '../types/dashboard'
 
-const unwrapDashboard = (res: { data: unknown }): DashboardData => {
-  const payload = res.data as { data: DashboardData }
+const unwrap = <T>(res: { data: unknown }): T => {
+  const payload = res.data as { data: T }
   return payload.data
 }
 
 export const dashboardApi = {
   get: async (): Promise<DashboardData> => {
     const res = await apiClient.get('/dashboard')
-    return unwrapDashboard(res)
+    return unwrap<DashboardData>(res)
+  },
+
+  getTodayOverview: async (): Promise<TodayOverview> => {
+    const res = await apiClient.get('/dashboard/today-overview')
+    return unwrap<TodayOverview>(res)
   },
 }

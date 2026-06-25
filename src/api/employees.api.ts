@@ -68,4 +68,12 @@ export const employeesApi = {
     const res = await apiClient.get(`/employees/${id}/documents`)
     return unwrap<EmployeeDocument[]>(res)
   },
+
+  delete: async (id: string): Promise<void> => {
+    await apiClient.delete(`/employees/${id}`)
+  },
+
+  changePassword: async (id: string, body: { newPassword: string }): Promise<void> => {
+    await apiClient.patch(`/employees/${id}/password`, body)
+  },
 }

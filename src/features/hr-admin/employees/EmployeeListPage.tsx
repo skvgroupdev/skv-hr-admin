@@ -8,6 +8,7 @@ import {
   useDeactivateEmployeeMutation,
   useReactivateEmployeeMutation,
 } from '../../../hooks/mutations/useEmployeeStatusMutation'
+import { useDeleteEmployeeMutation } from '../../../hooks/mutations/useDeleteEmployeeMutation'
 import { Button } from '../../../components/ui/Button'
 import { Card } from '../../../components/ui/Card'
 import { Input } from '../../../components/ui/Input'
@@ -59,7 +60,13 @@ function EmployeeRow({ employee }: EmployeeRowProps) {
   const navigate = useNavigate()
   const deactivate = useDeactivateEmployeeMutation()
   const reactivate = useReactivateEmployeeMutation()
+  const deleteMutation = useDeleteEmployeeMutation()
   const isActive = employee.status === 'ACTIVE' || employee.status === 'PROBATION'
+
+  const handleDelete = () => {
+    if (confirm(`ຕ້ອງການລຶບພະນັກງານ ${employee.firstName} ${employee.lastName} ອອກຈາກລະບົບ?`))
+      deleteMutation.mutate(employee.id)
+  }
 
   return (
     <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
@@ -118,6 +125,14 @@ function EmployeeRow({ employee }: EmployeeRowProps) {
               ເປີດ
             </Button>
           )}
+          <Button
+            size="sm"
+            variant="danger"
+            loading={deleteMutation.isPending}
+            onClick={handleDelete}
+          >
+            ລຶບ
+          </Button>
         </div>
       </td>
     </tr>

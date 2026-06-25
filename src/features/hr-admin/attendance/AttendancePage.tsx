@@ -10,6 +10,10 @@ import { cn } from '../../../lib/cn'
 import type { AttendanceLog, AttendanceStatus, AttendanceSummary } from '../../../types/attendance'
 import { useAuthStore } from '../../../stores/useAuthStore'
 import { useBranchesQuery } from '../../../hooks/queries/useBranchesQuery'
+import { useTodayOverviewQuery } from '../../../hooks/queries/useTodayOverviewQuery'
+import type { TodayOverview } from '../../../types/dashboard'
+import LeavePage from '../leave/LeavePage'
+import OutsideWorkPage from '../outside-work/OutsideWorkPage'
 
 interface PopulatedEmployee {
   firstName: string
@@ -21,6 +25,14 @@ interface PopulatedEmployee {
 interface AttendanceLogWithEmployee extends AttendanceLog {
   employee?: PopulatedEmployee
 }
+
+type TopTab = 'attendance' | 'leave' | 'outside-work'
+
+const TOP_TABS: { key: TopTab; label: string }[] = [
+  { key: 'attendance', label: 'ການເຂົ້າວຽກ' },
+  { key: 'leave', label: 'ລາພັກ' },
+  { key: 'outside-work', label: 'ນອກສະຖານທີ' },
+]
 
 type TabKey = 'checkin' | 'late' | 'absent'
 
@@ -171,17 +183,64 @@ function formatCheckTime(checkTime: string): string {
 const HEADERS_CHECKIN = ['ລະຫັດ', 'ຊື່ພະນັກງານ', 'ຕຳແໜ່ງ', 'ເວລາເຊັກອິນ', 'ສະຖານະ', 'ຊ້າ (ນາທີ)', 'ຮູບ']
 const HEADERS_NOT_CHECKED_IN = ['ລະຫັດ', 'ຊື່ພະນັກງານ', 'ຕຳແໜ່ງ', 'ສາຂາ', 'ເວລາເຂົ້າວຽກ', 'ສະຖານະ']
 
+// Build lookup maps: employeeId → leave/outside-work info (only for today's date)
+function buildOverviewMaps(overview: TodayOverview | undefined) {
+  const leaveMap = new Map<string, { status: string; leaveTypeName: string | null }>()
+  const outsideMap = new Map<string, { status: string; outsideType: string }>()
+  if (!overview) return { leaveMap, outsideMap }
+  for (const item of overview.leave) {
+    leaveMap.set(item.employeeId, { status: item.status, leaveTypeName: item.leaveTypeName })
+  }
+  for (const item of overview.outsideWork) {
+    outsideMap.set(item.employeeId, { status: item.status, outsideType: item.outsideType })
+  }
+  return { leaveMap, outsideMap }
+}
+
+interface EmployeeStatusBadgesProps {
+  employeeId: string
+  leaveMap: Map<string, { status: string; leaveTypeName: string | null }>
+  outsideMap: Map<string, { status: string; outsideType: string }>
+}
+
+function EmployeeStatusBadges({ employeeId, leaveMap, outsideMap }: EmployeeStatusBadgesProps) {
+  const leave = leaveMap.get(employeeId)
+  const outside = outsideMap.get(employeeId)
+  if (!leave && !outside) return null
+  return (
+    <span className="ml-1.5 inline-flex gap-1">
+      {leave && (
+        <span className="inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-yellow-100 text-yellow-800 border border-yellow-200">
+          ລາ
+        </span>
+      )}
+      {outside && (
+        <span className="inline-flex rounded-full px-2 py-0.5 text-xs font-medium bg-blue-100 text-blue-800 border border-blue-200">
+          ນອກສະຖານທີ
+        </span>
+      )}
+    </span>
+  )
+}
+
 interface AttendanceRowCheckinProps {
   log: AttendanceLogWithEmployee
   onPhotoClick: (url: string) => void
+  leaveMap: Map<string, { status: string; leaveTypeName: string | null }>
+  outsideMap: Map<string, { status: string; outsideType: string }>
 }
 
-function AttendanceRowCheckin({ log, onPhotoClick }: AttendanceRowCheckinProps) {
+function AttendanceRowCheckin({ log, onPhotoClick, leaveMap, outsideMap }: AttendanceRowCheckinProps) {
   const emp = employeeDisplay(log)
   return (
     <tr className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
       <td className="px-4 py-3 text-sm text-gray-500">{emp.code || '-'}</td>
-      <td className="px-4 py-3 text-sm text-gray-700">{emp.name}</td>
+      <td className="px-4 py-3 text-sm text-gray-700">
+        <span className="inline-flex items-center flex-wrap gap-1">
+          {emp.name}
+          <EmployeeStatusBadges employeeId={log.employeeId} leaveMap={leaveMap} outsideMap={outsideMap} />
+        </span>
+      </td>
       <td className="px-4 py-3 text-sm text-gray-600">{emp.position}</td>
       <td className="px-4 py-3 text-sm text-gray-600">{formatCheckTime(log.checkTime)}</td>
       <td className="px-4 py-3">
@@ -216,9 +275,11 @@ function AttendanceRowCheckin({ log, onPhotoClick }: AttendanceRowCheckinProps) 
 interface AttendanceTableProps {
   logs: AttendanceLogWithEmployee[]
   onPhotoClick: (url: string) => void
+  leaveMap: Map<string, { status: string; leaveTypeName: string | null }>
+  outsideMap: Map<string, { status: string; outsideType: string }>
 }
 
-function AttendanceTable({ logs, onPhotoClick }: AttendanceTableProps) {
+function AttendanceTable({ logs, onPhotoClick, leaveMap, outsideMap }: AttendanceTableProps) {
   if (logs.length === 0) {
     return <div className="py-16 text-center text-sm text-gray-500">ບໍ່ມີຂໍ້ມູນ</div>
   }
@@ -235,7 +296,13 @@ function AttendanceTable({ logs, onPhotoClick }: AttendanceTableProps) {
         </thead>
         <tbody>
           {logs.map((log) => (
-            <AttendanceRowCheckin key={log.id} log={log} onPhotoClick={onPhotoClick} />
+            <AttendanceRowCheckin
+              key={log.id}
+              log={log}
+              onPhotoClick={onPhotoClick}
+              leaveMap={leaveMap}
+              outsideMap={outsideMap}
+            />
           ))}
         </tbody>
       </table>
@@ -243,7 +310,13 @@ function AttendanceTable({ logs, onPhotoClick }: AttendanceTableProps) {
   )
 }
 
-function NotCheckedInTable({ employees }: { employees: NotCheckedInEmployee[] }) {
+interface NotCheckedInTableProps {
+  employees: NotCheckedInEmployee[]
+  leaveMap: Map<string, { status: string; leaveTypeName: string | null }>
+  outsideMap: Map<string, { status: string; outsideType: string }>
+}
+
+function NotCheckedInTable({ employees, leaveMap, outsideMap }: NotCheckedInTableProps) {
   if (employees.length === 0) {
     return <div className="py-16 text-center text-sm text-gray-500">ບໍ່ມີຂໍ້ມູນ</div>
   }
@@ -262,7 +335,12 @@ function NotCheckedInTable({ employees }: { employees: NotCheckedInEmployee[] })
           {employees.map((emp) => (
             <tr key={emp.id} className="border-b border-gray-100 hover:bg-gray-50 transition-colors">
               <td className="px-4 py-3 text-sm text-gray-500">{emp.employeeCode || '-'}</td>
-              <td className="px-4 py-3 text-sm text-gray-700">{emp.firstName} {emp.lastName}</td>
+              <td className="px-4 py-3 text-sm text-gray-700">
+                <span className="inline-flex items-center flex-wrap gap-1">
+                  {emp.firstName} {emp.lastName}
+                  <EmployeeStatusBadges employeeId={emp.id} leaveMap={leaveMap} outsideMap={outsideMap} />
+                </span>
+              </td>
               <td className="px-4 py-3 text-sm text-gray-600">{emp.position?.name ?? '-'}</td>
               <td className="px-4 py-3 text-sm text-gray-600">{emp.branch?.name ?? '-'}</td>
               <td className="px-4 py-3 text-sm text-gray-600">{emp.shiftStartTime ?? '-'}</td>
@@ -294,7 +372,7 @@ function isBranchFilterRole(role: string | undefined): role is BranchFilterRole 
   return BRANCH_FILTER_ROLES.includes(role as BranchFilterRole)
 }
 
-export default function AttendancePage() {
+function AttendanceContent() {
   const [activeTab, setActiveTab] = useState<TabKey>('checkin')
   const [date, setDate] = useState(todayStr)
   const [selfieUrl, setSelfieUrl] = useState<string | null>(null)
@@ -306,7 +384,6 @@ export default function AttendancePage() {
   const { data: branchesData } = useBranchesQuery({ isActive: true, limit: 100 })
   const branches = branchesData?.data ?? []
 
-  // Only send branchId when filter is shown and a branch is selected
   const branchIdParam = showBranchFilter && selectedBranchId ? { branchId: selectedBranchId } : {}
 
   const { data: dailyData, isLoading, isError, isFetching } = useQuery({
@@ -326,20 +403,21 @@ export default function AttendancePage() {
 
   const { data: summary } = useAttendanceSummaryQuery({ date, ...branchIdParam })
 
+  const isToday = date === todayStr()
+  const { data: todayOverview } = useTodayOverviewQuery()
+  const { leaveMap, outsideMap } = buildOverviewMaps(isToday ? todayOverview : undefined)
+
   const allLogs = (dailyData as AttendanceLogWithEmployee[]) ?? []
   const displayLogs = filterLogs(allLogs, activeTab)
   const loading = activeTab === 'absent' ? notCheckedInLoading : isLoading
 
   return (
-    <div className="p-6 space-y-5">
+    <div className="space-y-5">
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-3">
-          <h1 className="text-xl font-semibold text-gray-900">ການເຂົ້າວຽກ</h1>
-          <span className="text-xs text-gray-400 flex items-center gap-1">
-            <RefreshCw className={cn('w-3 h-3', isFetching && 'animate-spin')} />
-            ອັບເດດທຸກ 30 ວິນາທີ
-          </span>
-        </div>
+        <span className="text-xs text-gray-400 flex items-center gap-1">
+          <RefreshCw className={cn('w-3 h-3', isFetching && 'animate-spin')} />
+          ອັບເດດທຸກ 30 ວິນາທີ
+        </span>
         <DailyFilterBar
           date={date}
           onDateChange={setDate}
@@ -375,13 +453,51 @@ export default function AttendancePage() {
         ) : loading ? (
           <div className="px-6 py-12 text-center text-sm text-gray-500">ກຳລັງໂຫລດ...</div>
         ) : activeTab === 'absent' ? (
-          <NotCheckedInTable employees={notCheckedInData ?? []} />
+          <NotCheckedInTable employees={notCheckedInData ?? []} leaveMap={leaveMap} outsideMap={outsideMap} />
         ) : (
-          <AttendanceTable logs={displayLogs} onPhotoClick={setSelfieUrl} />
+          <AttendanceTable logs={displayLogs} onPhotoClick={setSelfieUrl} leaveMap={leaveMap} outsideMap={outsideMap} />
         )}
       </Card>
 
       {selfieUrl && <PhotoModal url={selfieUrl} onClose={() => setSelfieUrl(null)} />}
+    </div>
+  )
+}
+
+export default function AttendancePage() {
+  const [topTab, setTopTab] = useState<TopTab>('attendance')
+
+  return (
+    <div>
+      <div className="px-6 pt-6 pb-0 space-y-1">
+        <h1 className="text-xl font-semibold text-gray-900">ການເຂົ້າວຽກ & ການລາ</h1>
+        <div className="border-b border-gray-200 mt-4">
+          <nav className="-mb-px flex gap-6">
+            {TOP_TABS.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => setTopTab(tab.key)}
+                className={cn(
+                  'pb-3 text-sm font-medium border-b-2 transition-colors',
+                  topTab === tab.key
+                    ? 'border-primary text-primary'
+                    : 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300',
+                )}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </nav>
+        </div>
+      </div>
+
+      {topTab === 'attendance' && (
+        <div className="p-6">
+          <AttendanceContent />
+        </div>
+      )}
+      {topTab === 'leave' && <LeavePage />}
+      {topTab === 'outside-work' && <OutsideWorkPage />}
     </div>
   )
 }

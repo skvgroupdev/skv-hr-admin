@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react'
+import { Eye, EyeOff } from 'lucide-react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { useQuery } from '@tanstack/react-query'
 import { useEmployeeQuery } from '../../../hooks/queries/useEmployeeQuery'
@@ -74,6 +75,14 @@ function validateForm(form: FormState, isEdit: boolean): Record<string, string> 
 
   if (form.baseSalary && Number(form.baseSalary) <= 0) {
     errs.baseSalary = 'ເງິນເດືອນຕ້ອງຫຼາຍກວ່າ 0'
+  }
+
+  if (!isEdit) {
+    if (!form.initialPassword.trim()) {
+      errs.initialPassword = 'ກະລຸນາໃສ່ລະຫັດຜ່ານເລີ່ມຕົ້ນ'
+    } else if (form.initialPassword.trim().length < 6) {
+      errs.initialPassword = 'ລະຫັດຜ່ານຕ້ອງມີຢ່າງນ້ອຍ 6 ຕົວ'
+    }
   }
 
   if (form.newPassword && form.newPassword.trim().length < 8) {
@@ -232,6 +241,8 @@ export default function EmployeeFormPage() {
   const [globalError, setGlobalError] = useState('')
   const [shiftAssign, setShiftAssign] = useState<ShiftAssignState>({ shiftId: '', effectiveDate: '' })
   const [shiftError, setShiftError] = useState('')
+  const [showInitialPassword, setShowInitialPassword] = useState(false)
+  const [showNewPassword, setShowNewPassword] = useState(false)
   // track original values for change detection
   const [originalRole, setOriginalRole] = useState<string>('')
   const [originalShiftId, setOriginalShiftId] = useState<string>('')
@@ -813,18 +824,30 @@ export default function EmployeeFormPage() {
           </Card>
         )}
 
-        {/* Account — create: initial password; edit (COMPANY_OWNER/HR_ADMIN): new password */}
+        {/* Account — create: initial password required; edit (COMPANY_OWNER/HR_ADMIN): new password */}
         {!isEdit && (
           <Card>
             <SectionTitle title="ບັນຊີເຂົ້າລະບົບ" />
             <div className="max-w-xs">
-              <Input
-                label="ລະຫັດຜ່ານເລີ່ມຕົ້ນ"
-                type="password"
-                value={form.initialPassword}
-                onChange={setField('initialPassword')}
-                placeholder="ຖ້າວ່າງ ລະບົບຈະສ້າງໃຫ້"
-              />
+              <div className="relative">
+                <Input
+                  label="ລະຫັດຜ່ານເລີ່ມຕົ້ນ *"
+                  type={showInitialPassword ? 'text' : 'password'}
+                  value={form.initialPassword}
+                  onChange={setField('initialPassword')}
+                  placeholder="ຢ່າງນ້ອຍ 6 ຕົວ"
+                  error={fieldErrors.initialPassword}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowInitialPassword((v) => !v)}
+                  className="absolute right-3 top-[34px] text-gray-400 hover:text-gray-600"
+                  tabIndex={-1}
+                  aria-label={showInitialPassword ? 'ເຊື່ອງລະຫັດຜ່ານ' : 'ສະແດງລະຫັດຜ່ານ'}
+                >
+                  {showInitialPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
           </Card>
         )}
@@ -838,14 +861,25 @@ export default function EmployeeFormPage() {
                 onChange={setField('phone')}
                 placeholder="020xxxxxxxx"
               />
-              <Input
-                label="ລະຫັດຜ່ານໃໝ່ (ຖ້າຕ້ອງການປ່ຽນ)"
-                type="password"
-                value={form.newPassword}
-                onChange={setField('newPassword')}
-                placeholder="ຫວ່າງ = ບໍ່ປ່ຽນ"
-                error={fieldErrors.newPassword}
-              />
+              <div className="relative">
+                <Input
+                  label="ລະຫັດຜ່ານໃໝ່ (ຖ້າຕ້ອງການປ່ຽນ)"
+                  type={showNewPassword ? 'text' : 'password'}
+                  value={form.newPassword}
+                  onChange={setField('newPassword')}
+                  placeholder="ຫວ່າງ = ບໍ່ປ່ຽນ"
+                  error={fieldErrors.newPassword}
+                />
+                <button
+                  type="button"
+                  onClick={() => setShowNewPassword((v) => !v)}
+                  className="absolute right-3 top-[34px] text-gray-400 hover:text-gray-600"
+                  tabIndex={-1}
+                  aria-label={showNewPassword ? 'ເຊື່ອງລະຫັດຜ່ານ' : 'ສະແດງລະຫັດຜ່ານ'}
+                >
+                  {showNewPassword ? <EyeOff className="h-4 w-4" /> : <Eye className="h-4 w-4" />}
+                </button>
+              </div>
             </div>
             <p className="mt-2 text-xs text-gray-400">ລະຫັດຜ່ານໃໝ່ຕ້ອງມີຢ່າງນ້ອຍ 8 ຕົວ</p>
           </Card>

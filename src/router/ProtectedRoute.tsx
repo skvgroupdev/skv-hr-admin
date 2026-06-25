@@ -17,6 +17,11 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
   const setUser = useAuthStore((s) => s.setUser)
   const logout = useAuthStore((s) => s.logout)
 
+  // Infer redirect target from allowed roles (if no STAFF in list → admin route)
+  const fallbackLoginPath = allowedRoles?.every((r) => r !== 'STAFF')
+    ? '/admin/login'
+    : '/login'
+
   // Page-refresh case only: isHydrating=true means token was restored from storage
   // but user is unknown. Call /auth/me once to restore user state.
   // Fresh login sets isHydrating=false before navigate, so this effect is skipped.
@@ -24,17 +29,20 @@ export function ProtectedRoute({ children, allowedRoles }: ProtectedRouteProps) 
     if (isHydrating && accessToken) {
       authApi.me()
         .then((data) => setUser(data as User))
-        .catch(() => logout())
+        .catch(() => {
+          logout()
+          window.location.replace(fallbackLoginPath)
+        })
     }
-  }, [isHydrating, accessToken, setUser, logout])
+  }, [isHydrating, accessToken, setUser, logout, fallbackLoginPath])
 
   if (!accessToken) {
-    return <Navigate to="/login" replace />
+    return <Navigate to={fallbackLoginPath} replace />
   }
 
   // Waiting for user to restore from token — show nothing until resolved
   if (allowedRoles && !user) {
-    if (!isHydrating) return <Navigate to="/login" replace />
+    if (!isHydrating) return <Navigate to={fallbackLoginPath} replace />
     return null
   }
 

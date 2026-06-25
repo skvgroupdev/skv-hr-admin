@@ -2,7 +2,7 @@ import { useEffect, useRef, useState } from 'react'
 import { LogOut, User } from 'lucide-react'
 import { useNavigate } from 'react-router-dom'
 import { useQueryClient } from '@tanstack/react-query'
-import { useAuthStore } from '../../stores/useAuthStore'
+import { useAuthStore, getLoginPath } from '../../stores/useAuthStore'
 import { RoleBadge } from '../ui/Badge'
 import { NotificationBell } from '../ui/NotificationBell'
 import { toast } from '../ui/Toast'
@@ -36,8 +36,9 @@ export function TopBar() {
   }, [lastNotification, queryClient])
 
   const handleLogout = () => {
+    const redirectPath = getLoginPath(user?.role)
     logout()
-    navigate('/login', { replace: true })
+    navigate(redirectPath, { replace: true })
   }
 
   return (
