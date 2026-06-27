@@ -98,9 +98,17 @@ function OverviewTab({ employee }: { employee: Employee }) {
       {/* Header card */}
       <Card>
         <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-2xl font-semibold text-primary">
-            {employee.firstName?.charAt(0)}
-          </div>
+          {employee.photoUrl ? (
+            <img
+              src={employee.photoUrl}
+              alt={`${employee.firstName} ${employee.lastName}`}
+              className="h-16 w-16 rounded-full object-cover shrink-0"
+            />
+          ) : (
+            <div className="flex h-16 w-16 items-center justify-center rounded-full bg-primary/10 text-2xl font-semibold text-primary shrink-0">
+              {employee.firstName?.charAt(0)}
+            </div>
+          )}
           <div>
             <p className="text-lg font-semibold text-gray-900">
               {employee.firstName} {employee.lastName}
@@ -291,7 +299,7 @@ function ChangePasswordModal({
     }
     try {
       await mutation.mutateAsync({ id: employeeId, newPassword: newPassword.trim() })
-      toast.success('ເປີ່ຽນລະຫັດຜ່ານສຳເລັດ')
+      toast.success('ປ່ຽນລະຫັດຜ່ານສຳເລັດ')
       handleClose()
     } catch {
       setError('ເກີດຂໍ້ຜິດພາດ ກະລຸນາລອງໃໝ່')
@@ -299,7 +307,7 @@ function ChangePasswordModal({
   }
 
   return (
-    <Modal open={open} title={`ເປີ່ຽນລະຫັດຜ່ານ — ${employeeName}`} onClose={handleClose}>
+    <Modal open={open} title={`ປ່ຽນລະຫັດຜ່ານ — ${employeeName}`} onClose={handleClose}>
       <form onSubmit={handleSubmit} className="space-y-4">
         <div className="relative">
           <Input
@@ -556,7 +564,7 @@ export default function EmployeeDetailPage() {
               onClick={() => setChangePasswordOpen(true)}
             >
               <KeyRound className="h-4 w-4" />
-              ເປີ່ຽນລະຫັດຜ່ານ
+              ປ່ຽນລະຫັດຜ່ານ
             </Button>
           )}
           <Button variant="outline" onClick={() => navigate(`/hr/employees/${id}/edit`)}>

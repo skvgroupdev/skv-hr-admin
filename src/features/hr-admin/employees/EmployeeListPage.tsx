@@ -73,16 +73,31 @@ function EmployeeRow({ employee }: EmployeeRowProps) {
       <td className="px-4 py-3">
         <button
           onClick={() => navigate(`/hr/employees/${employee.id}`)}
-          className="text-sm font-medium text-primary hover:underline text-left"
+          className="flex items-center gap-3 text-left group"
         >
-          {employee.firstName} {employee.lastName}
-        </button>
-        {(employee.nickname || employee.firstNameEn || employee.lastNameEn) && (
-          <div className="text-xs text-gray-400">
-            {employee.nickname ? `(${employee.nickname}) ` : ''}
-            {[employee.firstNameEn, employee.lastNameEn].filter(Boolean).join(' ')}
+          {employee.photoUrl ? (
+            <img
+              src={employee.photoUrl}
+              alt={`${employee.firstName} ${employee.lastName}`}
+              className="h-8 w-8 rounded-full object-cover shrink-0"
+            />
+          ) : (
+            <div className="h-8 w-8 rounded-full bg-primary/10 text-primary flex items-center justify-center text-xs font-semibold shrink-0">
+              {employee.firstName?.[0]?.toUpperCase() ?? '?'}
+            </div>
+          )}
+          <div>
+            <div className="text-sm font-medium text-primary group-hover:underline">
+              {employee.firstName} {employee.lastName}
+            </div>
+            {(employee.nickname || employee.firstNameEn || employee.lastNameEn) && (
+              <div className="text-xs text-gray-400">
+                {employee.nickname ? `(${employee.nickname}) ` : ''}
+                {[employee.firstNameEn, employee.lastNameEn].filter(Boolean).join(' ')}
+              </div>
+            )}
           </div>
-        )}
+        </button>
       </td>
       <td className="px-4 py-3 text-sm text-gray-600">{employee.employeeCode ?? '-'}</td>
       <td className="px-4 py-3 text-sm text-gray-600">{employee.branch?.name ?? '-'}</td>

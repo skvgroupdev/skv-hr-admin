@@ -24,7 +24,16 @@ function formatDate(date: Date): string {
   return `${d}/${m}/${y}`
 }
 
-function HeaderAvatar({ initials }: { initials: string }) {
+function HeaderAvatar({ initials, avatarUrl }: { initials: string; avatarUrl?: string }) {
+  if (avatarUrl) {
+    return (
+      <img
+        src={avatarUrl}
+        alt={initials}
+        className="h-12 w-12 rounded-full border-2 border-white/30 object-cover shrink-0"
+      />
+    )
+  }
   return (
     <div className="h-12 w-12 rounded-full bg-white/20 border-2 border-white/30 flex items-center justify-center font-bold text-sm text-white shrink-0">
       {initials}
@@ -74,7 +83,7 @@ export function HomeHeader() {
 
             <p className="text-xs opacity-60 mt-1">{formatDate(new Date())}</p>
           </div>
-          <HeaderAvatar initials={initials} />
+          <HeaderAvatar initials={initials} avatarUrl={user?.avatarUrl} />
         </div>
       </div>
     </div>
